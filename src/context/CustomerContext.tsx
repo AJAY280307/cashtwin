@@ -158,7 +158,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     {
       id: 'notif-1',
       title: 'Cashflow Stress Predicted',
-      description: 'Projected balance approaches Γé╣1,200 threshold in 18 days. Action recommended.',
+      description: 'Projected balance approaches ₹1,200 threshold in 18 days. Action recommended.',
       timestamp: '12m ago',
       type: 'warning' as const,
       read: false,
@@ -166,7 +166,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     {
       id: 'notif-2',
       title: 'Upcoming EMI Reminder',
-      description: 'Γé╣12,000 auto-debit scheduled for Nov 02.',
+      description: '₹12,000 auto-debit scheduled for Nov 02.',
       timestamp: '2h ago',
       type: 'info' as const,
       read: false,
@@ -237,7 +237,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         {
           id: 'notif-c4',
           title: 'Critical Liquidity Alert',
-          description: 'Deficit of Γé╣22,400 expected within 6 days. Restructuring urgent.',
+          description: 'Deficit of ₹22,400 expected within 6 days. Restructuring urgent.',
           timestamp: '5m ago',
           type: 'warning',
           read: false,
@@ -248,7 +248,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         {
           id: 'notif-1',
           title: 'Cashflow Stress Predicted',
-          description: 'Projected balance approaches Γé╣1,200 threshold in 18 days. Action recommended.',
+          description: 'Projected balance approaches ₹1,200 threshold in 18 days. Action recommended.',
           timestamp: '12m ago',
           type: 'warning',
           read: false,
@@ -256,7 +256,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         {
           id: 'notif-2',
           title: 'Upcoming EMI Reminder',
-          description: 'Γé╣12,000 auto-debit scheduled for Nov 02.',
+          description: '₹12,000 auto-debit scheduled for Nov 02.',
           timestamp: '2h ago',
           type: 'info',
           read: false,
@@ -267,7 +267,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // 6. Reset Mitra Welcome message tailored to selected persona
     const custName = CUSTOMERS.find((c) => c.id === selectedCustomerId)?.name || 'there';
     const baseDash = MOCK_DASHBOARD_DATA[selectedCustomerId] || MOCK_DASHBOARD_DATA['CUST-003'];
-    const greeting = `Namaste ${custName}! I am Bachat Mitra, your AI Financial Co-Pilot. I monitor your cash balance (Γé╣${baseDash.metrics.currentBalance.toLocaleString('en-IN')}) and obligations (Γé╣${baseDash.metrics.upcomingEmi.toLocaleString('en-IN')} due). How can I assist your financial resilience today?`;
+    const greeting = `Namaste ${custName}! I am Bachat Mitra, your AI Financial Co-Pilot. I monitor your cash balance (₹${baseDash.metrics.currentBalance.toLocaleString('en-IN')}) and obligations (₹${baseDash.metrics.upcomingEmi.toLocaleString('en-IN')} due). How can I assist your financial resilience today?`;
     
     setMitraMessages([
       {
@@ -359,7 +359,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       let actionSuggestion: ChatMessage['actionSuggestion'] = undefined;
       let structuredDetails: ChatMessage['structuredDetails'] = undefined;
 
-      // Match Affordability check (e.g. "Can I afford Γé╣10,000", "Can I afford this purchase?", "10000 purchase")
+      // Match Affordability check (e.g. "Can I afford ₹10,000", "Can I afford this purchase?", "10000 purchase")
       const purchaseMatch = text.match(/(?:afford|buy|purchase|spend)[^\d]*(\d[\d,]*)/i) || text.match(/(\d[\d,]*)\s*(?:rupees|rs|inr|purchase|spend)/i);
       
       if (purchaseMatch || lower.includes('can i afford')) {
@@ -369,7 +369,7 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const remainingSafetyMargin = postBalance - upcomingEmi;
 
         if (remainingSafetyMargin < 0) {
-          replyText = `Based on your current financial pressure and upcoming commitments, delaying this Γé╣${purchaseAmount.toLocaleString('en-IN')} purchase is strongly recommended to protect your emergency fund. Your available balance is Γé╣${currentBalance.toLocaleString('en-IN')} and you have a scheduled EMI of Γé╣${upcomingEmi.toLocaleString('en-IN')} in 18 days. Completing this purchase now would create a projected deficit of Γé╣${Math.abs(remainingSafetyMargin).toLocaleString('en-IN')}.`;
+          replyText = `Based on your current financial pressure and upcoming commitments, delaying this ₹${purchaseAmount.toLocaleString('en-IN')} purchase is strongly recommended to protect your emergency fund. Your available balance is ₹${currentBalance.toLocaleString('en-IN')} and you have a scheduled EMI of ₹${upcomingEmi.toLocaleString('en-IN')} in 18 days. Completing this purchase now would create a projected deficit of ₹${Math.abs(remainingSafetyMargin).toLocaleString('en-IN')}.`;
           actionSuggestion = {
             label: 'Simulate Delaying Expense',
             route: '/simulator',
@@ -378,11 +378,13 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           structuredDetails = {
             amount: purchaseAmount,
             impactVerdict: 'STRESS_WARNING',
-            bufferChange: `${bufferDays}d ΓåÆ ${Math.max(0, bufferDays - 9)}d`,
+            bufferChange: `${bufferDays} Days → ${Math.max(0, bufferDays - 9)} Days`,
+            bufferBefore: `${bufferDays} Days`,
+            bufferAfter: `${Math.max(0, bufferDays - 9)} Days`,
             recommendationSummary: 'Postpone until emergency buffer recovers above 30 days',
           };
         } else if (remainingSafetyMargin < 5000) {
-          replyText = `You can technically cover this Γé╣${purchaseAmount.toLocaleString('en-IN')} purchase, but it will compress your safety margin to Γé╣${remainingSafetyMargin.toLocaleString('en-IN')} after your scheduled Γé╣${upcomingEmi.toLocaleString('en-IN')} EMI. Exercise caution.`;
+          replyText = `You can technically cover this ₹${purchaseAmount.toLocaleString('en-IN')} purchase, but it will compress your safety margin to ₹${remainingSafetyMargin.toLocaleString('en-IN')} after your scheduled ₹${upcomingEmi.toLocaleString('en-IN')} EMI. Exercise caution.`;
           actionSuggestion = {
             label: 'Test in What-If Simulator',
             route: '/simulator',
@@ -391,54 +393,58 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           structuredDetails = {
             amount: purchaseAmount,
             impactVerdict: 'CAUTION',
-            bufferChange: `${bufferDays}d ΓåÆ ${Math.max(1, bufferDays - 5)}d`,
+            bufferChange: `${bufferDays} Days → ${Math.max(1, bufferDays - 5)} Days`,
+            bufferBefore: `${bufferDays} Days`,
+            bufferAfter: `${Math.max(1, bufferDays - 5)} Days`,
             recommendationSummary: 'Tight buffer. Consider splitting into 2 monthly tranches.',
           };
         } else {
-          replyText = `Yes, you can comfortably afford this Γé╣${purchaseAmount.toLocaleString('en-IN')} purchase. Even after accounting for your Γé╣${upcomingEmi.toLocaleString('en-IN')} EMI, you retain a healthy reserve of Γé╣${remainingSafetyMargin.toLocaleString('en-IN')}.`;
+          replyText = `Yes, you can comfortably afford this ₹${purchaseAmount.toLocaleString('en-IN')} purchase. Even after accounting for your ₹${upcomingEmi.toLocaleString('en-IN')} EMI, you retain a healthy reserve of ₹${remainingSafetyMargin.toLocaleString('en-IN')}.`;
           structuredDetails = {
             amount: purchaseAmount,
             impactVerdict: 'AFFORDABLE',
-            bufferChange: `${bufferDays}d buffer preserved`,
+            bufferChange: `${bufferDays} Days buffer preserved`,
+            bufferBefore: `${bufferDays} Days`,
+            bufferAfter: `${bufferDays} Days`,
             recommendationSummary: 'Cushion safely absorbs the expenditure',
           };
         }
       } else if (lower.includes('help me save money') || lower.includes('save money')) {
-        replyText = `Here are 3 immediate ways to save money without disrupting your lifestyle:\n1. Pause 2 inactive subscriptions (Cult.fit & Hotstar) to save Γé╣1,999/mo.\n2. Cap discretionary dining to Γé╣2,000/week, keeping Γé╣3,500 in your checking account.\n3. Automate a Γé╣1,500 weekly emergency buffer deposit.`;
+        replyText = `Here are 3 immediate ways to save money without disrupting your lifestyle:\n1. Pause 2 inactive subscriptions (Cult.fit & Hotstar) to save ₹1,999/mo.\n2. Cap discretionary dining to ₹2,000/week, keeping ₹3,500 in your checking account.\n3. Automate a ₹1,500 weekly emergency buffer deposit.`;
         actionSuggestion = {
           label: 'Manage Subscriptions',
           route: '/subscriptions',
         };
       } else if (lower.includes('analyze my financial health') || lower.includes('health')) {
-        replyText = `Your current Resilience Score is ${selectedCustomer.resilienceScore}/100 (${selectedCustomer.riskLevel.replace('_', ' ')}). Your income stability is strong, but your cash buffer is ${bufferDays} days against an upcoming Γé╣${upcomingEmi.toLocaleString('en-IN')} obligation. Your biggest point of friction is elevated discretionary spending (+18% this month).`;
+        replyText = `Your current Resilience Score is ${selectedCustomer.resilienceScore}/100 (${selectedCustomer.riskLevel.replace('_', ' ')}). Your income stability is strong, but your cash buffer is ${bufferDays} days against an upcoming ₹${upcomingEmi.toLocaleString('en-IN')} obligation. Your biggest point of friction is elevated discretionary spending (+18% this month).`;
         actionSuggestion = {
           label: 'View Stress Heatmap',
           route: '/heatmap',
         };
       } else if (lower.includes('why is my risk increasing') || lower.includes('risk')) {
         replyText = `Your financial pressure started increasing in March due to higher discretionary spending and declining net savings. Specifically:
-ΓÇó Discretionary expenses rose to Γé╣14,500/mo (up 28%).
-ΓÇó Monthly savings rate dropped from 26% down to 6%.
-ΓÇó Upcoming EMI represents 65% of your available liquidity.`;
+• Discretionary expenses rose to ₹14,500/mo (up 28%).
+• Monthly savings rate dropped from 26% down to 6%.
+• Upcoming EMI represents 65% of your available liquidity.`;
         actionSuggestion = {
           label: 'Inspect Journey Timeline',
           route: '/timeline',
         };
       } else if (lower.includes('recovery plan') || lower.includes('plan')) {
-        replyText = `I have generated a 4-Week Financial Recovery Plan tailored to your risk profile. Completing all 4 weekly milestones is projected to restore Γé╣6,500 in monthly liquidity and elevate your resilience score into the Healthy category (+22 points).`;
+        replyText = `I have generated a 4-Week Financial Recovery Plan tailored to your risk profile. Completing all 4 weekly milestones is projected to restore ₹6,500 in monthly liquidity and elevate your resilience score into the Healthy category (+22 points).`;
         actionSuggestion = {
           label: 'Open Recovery Plan',
           route: '/recovery-plan',
         };
       } else if (lower.includes('reduce expenses') || lower.includes('cut expenses')) {
-        replyText = `The fastest way to reduce expenses is cutting silent leaks and discretionary outlays. By reducing dining and pausing unused digital passes, you can immediately recover Γé╣5,000 to Γé╣6,500/mo in cash buffer.`;
+        replyText = `The fastest way to reduce expenses is cutting silent leaks and discretionary outlays. By reducing dining and pausing unused digital passes, you can immediately recover ₹5,000 to ₹6,500/mo in cash buffer.`;
         actionSuggestion = {
           label: 'Launch What-If Simulator',
           route: '/simulator',
           preset: { discretionarySpending: 3000 },
         };
       } else {
-        replyText = `Thank you for sharing. Based on your active profile (${selectedCustomer.name}, Acct ${selectedCustomer.accountNumber}), I'm continuously monitoring your upcoming Γé╣${upcomingEmi.toLocaleString('en-IN')} commitments and liquidity runway. What scenario would you like to explore next?`;
+        replyText = `Thank you for sharing. Based on your active profile (${selectedCustomer.name}, Acct ${selectedCustomer.accountNumber}), I'm continuously monitoring your upcoming ₹${upcomingEmi.toLocaleString('en-IN')} commitments and liquidity runway. What scenario would you like to explore next?`;
       }
 
       const mitraMsg: ChatMessage = {

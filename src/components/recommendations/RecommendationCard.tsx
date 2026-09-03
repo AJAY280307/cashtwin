@@ -70,7 +70,15 @@ export const RecommendationCard: React.FC<Props> = ({ recommendation }) => {
           <span className="font-bold text-slate-500 uppercase tracking-wider block text-[10px] mb-0.5">
             Identified Problem
           </span>
-          <p className="text-slate-800 leading-relaxed font-medium">
+          <p
+            className="text-slate-800 leading-relaxed font-medium recommendation-text"
+            style={{
+              wordBreak: 'normal',
+              overflowWrap: 'break-word',
+              whiteSpace: 'normal',
+              lineHeight: 1.5,
+            }}
+          >
             {recommendation.problem}
           </p>
         </div>
@@ -80,7 +88,15 @@ export const RecommendationCard: React.FC<Props> = ({ recommendation }) => {
           <span className="font-bold text-indigo-700 uppercase tracking-wider block text-[10px] mb-0.5">
             Recommended Action
           </span>
-          <p className="text-slate-900 leading-relaxed font-semibold">
+          <p
+            className="text-slate-900 leading-relaxed font-semibold recommendation-text"
+            style={{
+              wordBreak: 'normal',
+              overflowWrap: 'break-word',
+              whiteSpace: 'normal',
+              lineHeight: 1.5,
+            }}
+          >
             {recommendation.action}
           </p>
         </div>

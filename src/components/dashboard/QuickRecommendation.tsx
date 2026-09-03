@@ -39,7 +39,15 @@ export const QuickRecommendation: React.FC<Props> = ({ actionText, impactText })
               <span>High Impact</span>
             </span>
           </div>
-          <p className="text-sm font-semibold text-slate-900 mt-1 leading-snug">
+          <p
+            className="text-sm font-semibold text-slate-900 mt-1 leading-snug recommendation-text"
+            style={{
+              wordBreak: 'normal',
+              overflowWrap: 'break-word',
+              whiteSpace: 'normal',
+              lineHeight: 1.5,
+            }}
+          >
             "{actionText}"
           </p>
           <div className="flex items-center space-x-2 mt-2">

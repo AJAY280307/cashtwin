@@ -304,6 +304,8 @@ export interface ChatMessage {
     amount?: number;
     impactVerdict?: 'AFFORDABLE' | 'CAUTION' | 'STRESS_WARNING';
     bufferChange?: string;
+    bufferBefore?: string;
+    bufferAfter?: string;
     recommendationSummary?: string;
   };
 }

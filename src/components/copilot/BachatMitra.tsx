@@ -107,7 +107,7 @@ export const BachatMitra: React.FC = () => {
       {isMitraOpen && (
         <aside
           id="bachat-mitra-drawer"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[95vw] sm:w-[420px] h-[580px] max-h-[90vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500/30 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-150"
+          className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-[420px] h-[560px] max-h-[88vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500/30 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-150"
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-4 flex items-center justify-between shadow-xs">
@@ -193,7 +193,7 @@ export const BachatMitra: React.FC = () => {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/50 text-xs">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/50 text-xs custom-scrollbar overscroll-contain pr-2">
             {mitraMessages.map((msg) => {
               const isUser = msg.sender === 'user';
               return (
@@ -213,7 +213,7 @@ export const BachatMitra: React.FC = () => {
                     {isUser ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                   </div>
 
-                  <div className={`max-w-[82%] space-y-2`}>
+                  <div className={`w-full max-w-[85%] space-y-2`}>
                     <div
                       className={`p-3.5 rounded-2xl shadow-2xs leading-relaxed ${
                         isUser
@@ -221,34 +221,74 @@ export const BachatMitra: React.FC = () => {
                           : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-none'
                       }`}
                     >
-                      <p className="whitespace-pre-line text-xs font-medium">{msg.text}</p>
+                      <p
+                        className="text-xs font-medium recommendation-text"
+                        style={{
+                          wordBreak: 'normal',
+                          overflowWrap: 'break-word',
+                          whiteSpace: 'normal',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {msg.text}
+                      </p>
 
                       {/* Structured Purchase Verdict Card */}
                       {msg.structuredDetails && (
-                        <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-[11px]">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-500 uppercase text-[10px]">
-                              Affordability Impact
+                        <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-2.5 text-[11px]">
+                          <div className="flex items-center justify-between border-b border-slate-200/70 pb-2">
+                            <span className="font-extrabold text-slate-700 uppercase tracking-wider text-[10px]">
+                              AFFORDABILITY IMPACT
                             </span>
                             <span
-                              className={`font-extrabold px-1.5 py-0.5 rounded text-[10px] ${
+                              className={`font-extrabold px-2 py-0.5 rounded-full text-[10px] tracking-wide border ${
                                 msg.structuredDetails.impactVerdict === 'AFFORDABLE'
-                                  ? 'bg-emerald-100 text-emerald-800'
+                                  ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
                                   : msg.structuredDetails.impactVerdict === 'CAUTION'
-                                  ? 'bg-amber-100 text-amber-800'
-                                  : 'bg-rose-100 text-rose-800'
+                                  ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                  : 'bg-rose-100 text-rose-800 border-rose-200'
                               }`}
                             >
-                              {msg.structuredDetails.impactVerdict}
+                              {msg.structuredDetails.impactVerdict === 'STRESS_WARNING'
+                                ? 'AT RISK'
+                                : msg.structuredDetails.impactVerdict}
                             </span>
                           </div>
-                          {msg.structuredDetails.bufferChange && (
-                            <div className="text-slate-600">
-                              Buffer runway: <strong>{msg.structuredDetails.bufferChange}</strong>
+
+                          {/* Visual Buffer Runway Transition */}
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                              Buffer Runway
+                            </span>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2 text-xs font-extrabold">
+                                <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 font-mono">
+                                  {msg.structuredDetails.bufferBefore ||
+                                    (msg.structuredDetails.bufferChange?.includes('→')
+                                      ? msg.structuredDetails.bufferChange.split('→')[0].trim()
+                                      : '14 Days')}
+                                </span>
+                                <span className="text-slate-400 font-bold text-sm">→</span>
+                                <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-mono">
+                                  {msg.structuredDetails.bufferAfter ||
+                                    (msg.structuredDetails.bufferChange?.includes('→')
+                                      ? msg.structuredDetails.bufferChange.split('→')[1].trim()
+                                      : '5 Days')}
+                                </span>
+                              </div>
+                              {msg.structuredDetails.impactVerdict !== 'AFFORDABLE' && (
+                                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                                  -9 Days
+                                </span>
+                              )}
                             </div>
-                          )}
+                          </div>
+
                           {msg.structuredDetails.recommendationSummary && (
-                            <div className="text-slate-500 italic">
+                            <div className="text-slate-600 text-[11px] font-medium leading-relaxed bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/70">
+                              <strong className="text-amber-900 font-semibold block mb-0.5">
+                                Recommendation:
+                              </strong>
                               {msg.structuredDetails.recommendationSummary}
                             </div>
                           )}
