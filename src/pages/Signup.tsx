@@ -1,0 +1,217 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { signup } from '../services/auth';
+
+export const Signup: React.FC = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Basic validation
+    if (!name) {
+      setError('Please enter your full name.');
+      return;
+    }
+    if (!email) {
+      setError('Please enter your email address.');
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (!termsAccepted) {
+      setError('Please accept the terms and conditions.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await signup({ name, email, password });
+      // Navigate to login on success
+      navigate('/login');
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center items-center space-x-2">
+          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-md">
+            <ShieldCheck className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-2xl font-bold tracking-tight text-slate-900">CashTwin</span>
+        </div>
+        <h2 className="mt-4 text-center text-sm font-medium text-slate-500">
+          Create your account to get started.
+        </h2>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-sm border border-slate-200/60 sm:rounded-2xl sm:px-10">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+                Full Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="Jane Doe"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                Email address
+              </label>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="you@company.com"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 pr-10 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-500 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-5 w-5" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+                Confirm Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="text-sm text-rose-600 font-medium">
+                {error}
+              </div>
+            )}
+
+            <div className="flex items-center">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="terms" className="ml-2 block text-sm text-slate-700">
+                I agree to the{' '}
+                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  Terms and Conditions
+                </a>
+              </label>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex w-full justify-center rounded-lg border border-transparent bg-slate-900 py-2.5 px-4 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoading ? 'Creating account...' : 'Create Account'}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-2 text-slate-500">Already have an account?</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <Link
+                to="/login"
+                className="flex w-full justify-center rounded-lg border border-slate-300 bg-white py-2.5 px-4 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

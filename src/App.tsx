@@ -8,12 +8,16 @@ import { CashForecast } from './pages/CashForecast';
 import { EarlyWarning } from './pages/EarlyWarning';
 import { WhatIfSimulator } from './pages/WhatIfSimulator';
 import { Recommendations } from './pages/Recommendations';
+import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
 
 export default function App() {
   return (
     <CustomerProvider>
       <HashRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="financial-health" element={<FinancialHealth />} />
