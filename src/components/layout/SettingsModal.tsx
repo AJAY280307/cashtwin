@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { useCustomer } from '../../context/CustomerContext';
 import { setUseRealBackend, isUsingRealBackend } from '../../services/api';
-import { X, Server, Check, RefreshCw, ShieldCheck, Database, Code } from 'lucide-react';
+import { X, Server, Check, RefreshCw, ShieldCheck, Database, Code, Sliders } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
-  const { isSettingsOpen, setIsSettingsOpen, customers, selectedCustomerId, setSelectedCustomerId } =
-    useCustomer();
+  const {
+    isSettingsOpen,
+    setIsSettingsOpen,
+    customers,
+    selectedCustomerId,
+    setSelectedCustomerId,
+    accessibility,
+    updateAccessibility,
+  } = useCustomer();
   const [useBackend, setUseBackend] = useState(isUsingRealBackend());
   const [backendUrl, setBackendUrl] = useState('http://localhost:8000/api');
   const [tested, setTested] = useState<boolean | null>(null);
@@ -77,6 +84,89 @@ export const SettingsModal: React.FC = () => {
                   <div className="text-[11px] text-slate-500 mt-0.5">{c.riskLevel.replace('_', ' ')} &bull; {c.resilienceScore}/100</div>
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* FEATURE 9: ACCESSIBILITY MODE CONTROLS */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Sliders className="w-4 h-4 text-indigo-600" />
+                <span className="font-bold text-slate-800 text-xs">Accessibility Mode</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const allActive = accessibility.largerText && accessibility.highContrast;
+                  updateAccessibility({
+                    largerText: !allActive,
+                    highContrast: !allActive,
+                    simplifiedDashboard: !allActive,
+                    voiceFriendly: !allActive,
+                    reducedComplexity: !allActive,
+                  });
+                }}
+                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline"
+              >
+                {accessibility.largerText && accessibility.highContrast ? 'Disable All' : 'Quick Enable All'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+              {/* 1. Larger text */}
+              <label className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+                <span className="font-semibold text-slate-700">Larger Text</span>
+                <input
+                  type="checkbox"
+                  checked={accessibility.largerText}
+                  onChange={(e) => updateAccessibility({ largerText: e.target.checked })}
+                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+              </label>
+
+              {/* 2. High contrast mode */}
+              <label className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+                <span className="font-semibold text-slate-700">High Contrast</span>
+                <input
+                  type="checkbox"
+                  checked={accessibility.highContrast}
+                  onChange={(e) => updateAccessibility({ highContrast: e.target.checked })}
+                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+              </label>
+
+              {/* 3. Simplified dashboard */}
+              <label className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+                <span className="font-semibold text-slate-700">Simplified Dashboard</span>
+                <input
+                  type="checkbox"
+                  checked={accessibility.simplifiedDashboard}
+                  onChange={(e) => updateAccessibility({ simplifiedDashboard: e.target.checked })}
+                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+              </label>
+
+              {/* 4. Voice-friendly interactions */}
+              <label className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+                <span className="font-semibold text-slate-700">Voice Readout</span>
+                <input
+                  type="checkbox"
+                  checked={accessibility.voiceFriendly}
+                  onChange={(e) => updateAccessibility({ voiceFriendly: e.target.checked })}
+                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+              </label>
+
+              {/* 5. Reduced visual complexity */}
+              <label className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer sm:col-span-2">
+                <span className="font-semibold text-slate-700">Reduced Visual Complexity (Minimalist view)</span>
+                <input
+                  type="checkbox"
+                  checked={accessibility.reducedComplexity}
+                  onChange={(e) => updateAccessibility({ reducedComplexity: e.target.checked })}
+                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+              </label>
             </div>
           </div>
 

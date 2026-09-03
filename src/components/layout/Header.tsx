@@ -1,7 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCustomer } from '../../context/CustomerContext';
 import { CustomerSelector } from './CustomerSelector';
-import { Bell, Menu, ShieldCheck, Sparkles, CheckCircle2, AlertTriangle, Info } from 'lucide-react';
+import {
+  Bell,
+  Menu,
+  ShieldCheck,
+  Sparkles,
+  CheckCircle2,
+  AlertTriangle,
+  Info,
+  Sliders,
+  Eye,
+  Bot,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
@@ -11,11 +22,20 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenMobileMenu }) => {
-  const { selectedCustomer, notifications, markNotificationsAsRead } = useCustomer();
+  const {
+    selectedCustomer,
+    notifications,
+    markNotificationsAsRead,
+    accessibility,
+    updateAccessibility,
+    activeAlerts,
+    setIsMitraOpen,
+  } = useCustomer();
   const [showNotifications, setShowNotifications] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const activeAlertCount = activeAlerts.filter((a) => !a.dismissed).length;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -56,10 +76,61 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenMobileMen
         </div>
       </div>
 
-      {/* Right: Quick Customer Picker, Notifications, Responsible Badge, Profile */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
+      {/* Right: Quick Customer Picker, Accessibility Toggle, Alert Center, Notifications, Profile */}
+      <div className="flex items-center space-x-2 sm:space-x-2.5">
         {/* Customer Selector in Header */}
         <CustomerSelector variant="header" />
+
+        {/* Quick Accessibility Mode Toggle */}
+        <button
+          type="button"
+          id="quick-accessibility-toggle-btn"
+          onClick={() =>
+            updateAccessibility({
+              highContrast: !accessibility.highContrast,
+              largerText: !accessibility.largerText,
+            })
+          }
+          className={`p-2 rounded-lg border transition-colors flex items-center space-x-1 ${
+            accessibility.highContrast || accessibility.largerText
+              ? 'bg-indigo-600 text-white border-indigo-700 font-bold'
+              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border-slate-200'
+          }`}
+          title="Toggle High Contrast & Large Text Accessibility Mode"
+          aria-label="Toggle Accessibility Mode"
+        >
+          <Eye className="w-4 h-4" />
+          <span className="hidden xl:inline text-[11px] font-semibold">
+            {accessibility.highContrast ? 'A11y ON' : 'A11y'}
+          </span>
+        </button>
+
+        {/* Direct Link to Early Warning Alert Center */}
+        <Link
+          to="/alert-center"
+          id="header-alert-center-link"
+          className="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors border border-slate-200"
+          title="Financial Early Warning Center"
+        >
+          <AlertTriangle className="w-4 h-4 text-amber-500" />
+          {activeAlertCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-600 text-[9px] font-mono font-bold text-white flex items-center justify-center border-2 border-white">
+              {activeAlertCount}
+            </span>
+          )}
+        </Link>
+
+        {/* Bachat Mitra Quick Trigger */}
+        <button
+          type="button"
+          id="header-mitra-trigger-btn"
+          onClick={() => setIsMitraOpen(true)}
+          className="p-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-colors flex items-center space-x-1"
+          title="Open Bachat Mitra AI Financial Co-Pilot"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span className="hidden md:inline text-[11px] font-bold">Mitra</span>
+        </button>
 
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>
