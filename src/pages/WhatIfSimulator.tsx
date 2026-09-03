@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../context/CustomerContext';
 import { financialApi } from '../services/api';
 import { SimulationInput, SimulationResult as SimResultType } from '../types/financial';
-import { DEFAULT_SIMULATION_INPUTS } from '../data/mockData';
 import { SimulationControls } from '../components/simulator/SimulationControls';
 import { SimulationResult } from '../components/simulator/SimulationResult';
 import { SlidersHorizontal, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
@@ -10,37 +9,48 @@ import { SlidersHorizontal, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-r
 export const WhatIfSimulator: React.FC = () => {
   const { selectedCustomerId, simulationPreset, setSimulationPreset } = useCustomer();
 
-  const customerDefaults =
-    DEFAULT_SIMULATION_INPUTS[selectedCustomerId] || DEFAULT_SIMULATION_INPUTS['CUST-003'];
+  const [customerDefaults, setCustomerDefaults] = useState<SimulationInput>({
+    discretionarySpending: 8000,
+    monthlyEmi: 12000,
+    plannedExpense: 10000,
+    monthlySavings: 3000,
+  });
 
   const [input, setInput] = useState<SimulationInput>(customerDefaults);
   const [result, setResult] = useState<SimResultType | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [activePresetNotification, setActivePresetNotification] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Safety threshold reference
-  const safetyThreshold = selectedCustomerId === 'CUST-001' ? 15000 : selectedCustomerId === 'CUST-004' ? 4000 : 5000;
+  const safetyThreshold = selectedCustomerId === 'U00001' ? 15000 : 5000;
 
-  // Sync with customer switch or simulation presets
   useEffect(() => {
-    const defaults = DEFAULT_SIMULATION_INPUTS[selectedCustomerId] || DEFAULT_SIMULATION_INPUTS['CUST-003'];
-    if (simulationPreset) {
-      setInput((prev) => ({
-        ...prev,
-        ...simulationPreset,
-      }));
-      setSimulationPreset(null);
-    } else {
-      // By default for CUST-003, set discretionary to 3000 to immediately demonstrate the killer feature (reducing discretionary by ₹5,000)
-      if (selectedCustomerId === 'CUST-003') {
-        setInput({
-          ...defaults,
-          discretionarySpending: 3000,
-        });
-      } else {
-        setInput(defaults);
+    let mounted = true;
+    financialApi.getDashboard(selectedCustomerId).then((res) => {
+      if (mounted) {
+        // Derive defaults safely from backend data
+        const defaults: SimulationInput = {
+          discretionarySpending: Math.max(0, (res.metrics.monthlyIncome * 0.2)),
+          monthlyEmi: res.metrics.upcomingEmi,
+          plannedExpense: 0,
+          monthlySavings: 0,
+        };
+        setCustomerDefaults(defaults);
+        
+        if (simulationPreset) {
+          setInput((prev) => ({
+            ...prev,
+            ...simulationPreset,
+          }));
+          setSimulationPreset(null);
+        } else {
+          setInput(defaults);
+        }
+        setIsLoaded(true);
       }
-    }
+    });
+    return () => { mounted = false; };
   }, [selectedCustomerId]);
 
   // Run calculation whenever input changes or user triggers run
@@ -55,8 +65,10 @@ export const WhatIfSimulator: React.FC = () => {
   };
 
   useEffect(() => {
-    executeSimulation(input);
-  }, [input, selectedCustomerId]);
+    if (isLoaded) {
+      executeSimulation(input);
+    }
+  }, [input, isLoaded, selectedCustomerId]);
 
   const handleApplyPreset = (preset: Partial<SimulationInput>, label: string) => {
     const updated = {

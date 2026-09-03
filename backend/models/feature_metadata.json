@@ -1,0 +1,63 @@
+{
+    "model_name": "Logistic Regression",
+    "model_version": "1.0",
+    "training_date": "2026-09-03T20:27:33.120823",
+    "target_definition": "financial_obligation_ratio > 1.0",
+    "target_column": "distress_target",
+    "feature_columns": [
+        "age",
+        "monthly_income_usd",
+        "monthly_expenses_usd",
+        "savings_usd",
+        "loan_amount_usd",
+        "loan_term_months",
+        "monthly_emi_usd",
+        "loan_interest_rate_pct",
+        "debt_to_income_ratio",
+        "credit_score",
+        "savings_to_income_ratio",
+        "cash_buffer_months"
+    ],
+    "excluded_columns": [
+        "id",
+        "user_id",
+        "record_date",
+        "financial_obligation_ratio",
+        "distress_target",
+        "expense_to_income_ratio",
+        "emi_to_income_ratio"
+    ],
+    "train_size": 25939,
+    "test_size": 6485,
+    "random_state": 42,
+    "metrics": {
+        "Accuracy": 0.9938319198149576,
+        "Precision": 0.987043035631652,
+        "Recall": 0.9944055944055944,
+        "F1-score": 0.990710636321412,
+        "ROC-AUC": 0.9998612140547624,
+        "False_Negatives": 12,
+        "False_Negative_Rate": 0.005594405594405594
+    },
+    "class_distribution": {
+        "total_samples": 32424,
+        "DISTRESSED_count": 10724,
+        "NOT_DISTRESSED_count": 21700,
+        "DISTRESSED_percentage": 33.07,
+        "NOT_DISTRESSED_percentage": 66.93
+    },
+    "feature_importance": {
+        "monthly_emi_usd": 18.415947943144854,
+        "debt_to_income_ratio": 10.30881856737152,
+        "monthly_income_usd": -7.208757880674462,
+        "monthly_expenses_usd": 5.648769948394539,
+        "loan_amount_usd": 2.25802979675929,
+        "loan_interest_rate_pct": 1.3454651535744817,
+        "savings_usd": -0.3336328589634248,
+        "loan_term_months": -0.2941031837845431,
+        "savings_to_income_ratio": 0.2738385027497455,
+        "cash_buffer_months": -0.06765711402114276,
+        "credit_score": -0.029933974610575034,
+        "age": -0.029328446911394315
+    }
+}

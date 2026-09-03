@@ -1,0 +1,382 @@
+{
+    "dataset_size": 32424,
+    "columns_analyzed": [
+        "monthly_income_usd",
+        "monthly_expenses_usd",
+        "savings_usd",
+        "monthly_emi_usd",
+        "loan_amount_usd",
+        "loan_interest_rate_pct",
+        "debt_to_income_ratio",
+        "credit_score",
+        "savings_to_income_ratio",
+        "expense_to_income_ratio",
+        "emi_to_income_ratio",
+        "cash_buffer_months",
+        "financial_obligation_ratio"
+    ],
+    "feature_statistics": {
+        "monthly_income_usd": {
+            "min": 500.0,
+            "max": 12404.05,
+            "mean": 4027.8631846780163,
+            "median": 3997.74,
+            "std": 1916.7733528638616,
+            "p25": 2657.795,
+            "p75": 5351.6075,
+            "p90": 6520.582
+        },
+        "monthly_expenses_usd": {
+            "min": 150.01,
+            "max": 10082.71,
+            "mean": 2419.44470916605,
+            "median": 2219.575,
+            "std": 1388.893084221305,
+            "p25": 1397.4975,
+            "p75": 3254.0375,
+            "p90": 4317.3910000000005
+        },
+        "savings_usd": {
+            "min": 635.96,
+            "max": 1237774.39,
+            "mean": 243752.03609055022,
+            "median": 201700.33000000002,
+            "std": 191577.1895171771,
+            "p25": 86291.54999999999,
+            "p75": 358966.21749999997,
+            "p90": 517276.26900000003
+        },
+        "monthly_emi_usd": {
+            "min": 0.0,
+            "max": 47723.84,
+            "mean": 3092.9923390081426,
+            "median": 0.0,
+            "std": 6478.9397762146,
+            "p25": 0.0,
+            "p75": 3574.5675,
+            "p90": 9720.647000000006
+        },
+        "loan_amount_usd": {
+            "min": 0.0,
+            "max": 499954.75,
+            "mean": 100114.7359924747,
+            "median": 0.0,
+            "std": 152536.5886348044,
+            "p25": 0.0,
+            "p75": 189499.07,
+            "p90": 374168.286
+        },
+        "loan_interest_rate_pct": {
+            "min": 0.0,
+            "max": 30.0,
+            "mean": 6.616332037996545,
+            "median": 0.0,
+            "std": 9.472964193008412,
+            "p25": 0.0,
+            "p75": 13.14,
+            "p90": 23.33
+        },
+        "debt_to_income_ratio": {
+            "min": 0.0,
+            "max": 90.67,
+            "mean": 1.1948809523809523,
+            "median": 0.0,
+            "std": 3.761964391517039,
+            "p25": 0.0,
+            "p75": 0.92,
+            "p90": 3.07
+        },
+        "credit_score": {
+            "min": 300.0,
+            "max": 850.0,
+            "mean": 575.2604243770047,
+            "median": 575.0,
+            "std": 159.0232272110046,
+            "p25": 437.0,
+            "p75": 714.0,
+            "p90": 796.0
+        },
+        "savings_to_income_ratio": {
+            "min": 1.2002704101220183,
+            "max": 119.99812312312312,
+            "mean": 60.54507238144171,
+            "median": 60.441418566227455,
+            "std": 34.216027456843705,
+            "p25": 30.97343146302963,
+            "p75": 90.0867515176939,
+            "p90": 108.12575307009989
+        },
+        "expense_to_income_ratio": {
+            "min": 0.3000063008645808,
+            "max": 0.8999876448966805,
+            "mean": 0.6004824299658879,
+            "median": 0.6013459458628025,
+            "std": 0.17348512977563965,
+            "p25": 0.4500900524958329,
+            "p75": 0.7497188473405992,
+            "p90": 0.8407920234727815
+        },
+        "emi_to_income_ratio": {
+            "min": 0.0,
+            "max": 90.66566,
+            "mean": 1.1948595044803874,
+            "median": 0.0,
+            "std": 3.7619726440652035,
+            "p25": 0.0,
+            "p75": 0.9167225049822163,
+            "p90": 3.0724413040332057
+        },
+        "cash_buffer_months": {
+            "min": 1.3943369368676182,
+            "max": 397.0317281214319,
+            "mean": 110.76244076174095,
+            "median": 101.33759631199257,
+            "std": 74.84080079332797,
+            "p25": 51.18925770837396,
+            "p75": 152.2489836175357,
+            "p90": 214.5988723321704
+        },
+        "financial_obligation_ratio": {
+            "min": 0.30002,
+            "max": 91.29504,
+            "mean": 1.795341934446275,
+            "median": 0.7701944107105998,
+            "std": 3.765045646462143,
+            "p25": 0.5417469824161354,
+            "p75": 1.5225813718483916,
+            "p90": 3.6902455131566017
+        }
+    },
+    "correlation_matrix": {
+        "monthly_income_usd": {
+            "monthly_income_usd": 1.0,
+            "monthly_expenses_usd": 0.8291714502811875,
+            "savings_usd": 0.6038179711169536,
+            "monthly_emi_usd": -0.0037395161745037986,
+            "loan_amount_usd": 0.000920566121969969,
+            "loan_interest_rate_pct": 0.006557927578692365,
+            "debt_to_income_ratio": -0.238499651516502,
+            "credit_score": -0.004000921248165676,
+            "savings_to_income_ratio": -0.0017570577093831315,
+            "expense_to_income_ratio": 0.0023566495801238575,
+            "emi_to_income_ratio": -0.23850053303219312,
+            "cash_buffer_months": -0.002627693719909272,
+            "financial_obligation_ratio": -0.2381972813653783
+        },
+        "monthly_expenses_usd": {
+            "monthly_income_usd": 0.8291714502811875,
+            "monthly_expenses_usd": 1.0,
+            "savings_usd": 0.5018035010166223,
+            "monthly_emi_usd": -0.004057980433110248,
+            "loan_amount_usd": 0.0021147843921198515,
+            "loan_interest_rate_pct": 0.002464038270914046,
+            "debt_to_income_ratio": -0.19824747185919464,
+            "credit_score": -0.008587578806597674,
+            "savings_to_income_ratio": -0.0006720589933654205,
+            "expense_to_income_ratio": 0.5064651137892366,
+            "emi_to_income_ratio": -0.19825021617099461,
+            "cash_buffer_months": -0.23312434051469497,
+            "financial_obligation_ratio": -0.17475159286341688
+        },
+        "savings_usd": {
+            "monthly_income_usd": 0.6038179711169536,
+            "monthly_expenses_usd": 0.5018035010166223,
+            "savings_usd": 1.0,
+            "monthly_emi_usd": 0.0003671471212286343,
+            "loan_amount_usd": 0.00197098185586782,
+            "loan_interest_rate_pct": 0.009561131234252819,
+            "debt_to_income_ratio": -0.14345758934958389,
+            "credit_score": -0.002051716864951897,
+            "savings_to_income_ratio": 0.7193441589221857,
+            "expense_to_income_ratio": 0.002548632902945634,
+            "emi_to_income_ratio": -0.1434534334627787,
+            "cash_buffer_months": 0.5991422296265175,
+            "financial_obligation_ratio": -0.1432189123605905
+        },
+        "monthly_emi_usd": {
+            "monthly_income_usd": -0.0037395161745037986,
+            "monthly_expenses_usd": -0.004057980433110248,
+            "savings_usd": 0.0003671471212286343,
+            "monthly_emi_usd": 1.0,
+            "loan_amount_usd": 0.7203590156247659,
+            "loan_interest_rate_pct": 0.5589478868978768,
+            "debt_to_income_ratio": 0.6609569702267719,
+            "credit_score": 0.0013409561646461853,
+            "savings_to_income_ratio": 0.002702685627418309,
+            "expense_to_income_ratio": -0.001968102321325535,
+            "emi_to_income_ratio": 0.6609558101211829,
+            "cash_buffer_months": 0.0046188380257163155,
+            "financial_obligation_ratio": 0.6603256569973802
+        },
+        "loan_amount_usd": {
+            "monthly_income_usd": 0.000920566121969969,
+            "monthly_expenses_usd": 0.0021147843921198515,
+            "savings_usd": 0.00197098185586782,
+            "monthly_emi_usd": 0.7203590156247659,
+            "loan_amount_usd": 1.0,
+            "loan_interest_rate_pct": 0.6861248961128747,
+            "debt_to_income_ratio": 0.4808635163956572,
+            "credit_score": 0.007273864297373329,
+            "savings_to_income_ratio": 0.0012370951895696888,
+            "expense_to_income_ratio": 0.004168954125992411,
+            "emi_to_income_ratio": 0.48085917651363025,
+            "cash_buffer_months": 0.00018337173803747276,
+            "financial_obligation_ratio": 0.48065879916757526
+        },
+        "loan_interest_rate_pct": {
+            "monthly_income_usd": 0.006557927578692365,
+            "monthly_expenses_usd": 0.002464038270914046,
+            "savings_usd": 0.009561131234252819,
+            "monthly_emi_usd": 0.5589478868978768,
+            "loan_amount_usd": 0.6861248961128747,
+            "loan_interest_rate_pct": 1.0,
+            "debt_to_income_ratio": 0.3725613668462656,
+            "credit_score": 0.009027836527187897,
+            "savings_to_income_ratio": 0.00614160412272444,
+            "expense_to_income_ratio": -0.0013906813889396025,
+            "emi_to_income_ratio": 0.3725562696753566,
+            "cash_buffer_months": 0.007504669204108107,
+            "financial_obligation_ratio": 0.37218811242545485
+        },
+        "debt_to_income_ratio": {
+            "monthly_income_usd": -0.238499651516502,
+            "monthly_expenses_usd": -0.19824747185919464,
+            "savings_usd": -0.14345758934958389,
+            "monthly_emi_usd": 0.6609569702267719,
+            "loan_amount_usd": 0.4808635163956572,
+            "loan_interest_rate_pct": 0.3725613668462656,
+            "debt_to_income_ratio": 1.0,
+            "credit_score": 0.012048903027455649,
+            "savings_to_income_ratio": -0.00015895375666231818,
+            "expense_to_income_ratio": -0.005331760772918888,
+            "emi_to_income_ratio": 0.999999882902034,
+            "cash_buffer_months": 0.003613307940082324,
+            "financial_obligation_ratio": 0.9989380144355965
+        },
+        "credit_score": {
+            "monthly_income_usd": -0.004000921248165676,
+            "monthly_expenses_usd": -0.008587578806597674,
+            "savings_usd": -0.002051716864951897,
+            "monthly_emi_usd": 0.0013409561646461853,
+            "loan_amount_usd": 0.007273864297373329,
+            "loan_interest_rate_pct": 0.009027836527187897,
+            "debt_to_income_ratio": 0.012048903027455649,
+            "credit_score": 1.0,
+            "savings_to_income_ratio": 0.002403549359379345,
+            "expense_to_income_ratio": -0.004440175910125375,
+            "emi_to_income_ratio": 0.01204276702907399,
+            "cash_buffer_months": 0.0038237994786576965,
+            "financial_obligation_ratio": 0.011828344145064883
+        },
+        "savings_to_income_ratio": {
+            "monthly_income_usd": -0.0017570577093831315,
+            "monthly_expenses_usd": -0.0006720589933654205,
+            "savings_usd": 0.7193441589221857,
+            "monthly_emi_usd": 0.002702685627418309,
+            "loan_amount_usd": 0.0012370951895696888,
+            "loan_interest_rate_pct": 0.00614160412272444,
+            "debt_to_income_ratio": -0.00015895375666231818,
+            "credit_score": 0.002403549359379345,
+            "savings_to_income_ratio": 1.0,
+            "expense_to_income_ratio": -0.0002455822781310326,
+            "emi_to_income_ratio": -0.0001551023658415288,
+            "cash_buffer_months": 0.8355811717688316,
+            "financial_obligation_ratio": -0.00016629167067497148
+        },
+        "expense_to_income_ratio": {
+            "monthly_income_usd": 0.0023566495801238575,
+            "monthly_expenses_usd": 0.5064651137892366,
+            "savings_usd": 0.002548632902945634,
+            "monthly_emi_usd": -0.001968102321325535,
+            "loan_amount_usd": 0.004168954125992411,
+            "loan_interest_rate_pct": -0.0013906813889396025,
+            "debt_to_income_ratio": -0.005331760772918888,
+            "credit_score": -0.004440175910125375,
+            "savings_to_income_ratio": -0.0002455822781310326,
+            "expense_to_income_ratio": 1.0,
+            "emi_to_income_ratio": -0.005337151894260151,
+            "cash_buffer_months": -0.4594977434471836,
+            "financial_obligation_ratio": 0.04074503332950642
+        },
+        "emi_to_income_ratio": {
+            "monthly_income_usd": -0.23850053303219312,
+            "monthly_expenses_usd": -0.19825021617099461,
+            "savings_usd": -0.1434534334627787,
+            "monthly_emi_usd": 0.6609558101211829,
+            "loan_amount_usd": 0.48085917651363025,
+            "loan_interest_rate_pct": 0.3725562696753566,
+            "debt_to_income_ratio": 0.999999882902034,
+            "credit_score": 0.01204276702907399,
+            "savings_to_income_ratio": -0.0001551023658415288,
+            "expense_to_income_ratio": -0.005337151894260151,
+            "emi_to_income_ratio": 1.0,
+            "cash_buffer_months": 0.003618878456325695,
+            "financial_obligation_ratio": 0.9989378830268043
+        },
+        "cash_buffer_months": {
+            "monthly_income_usd": -0.002627693719909272,
+            "monthly_expenses_usd": -0.23312434051469497,
+            "savings_usd": 0.5991422296265175,
+            "monthly_emi_usd": 0.0046188380257163155,
+            "loan_amount_usd": 0.00018337173803747276,
+            "loan_interest_rate_pct": 0.007504669204108107,
+            "debt_to_income_ratio": 0.003613307940082324,
+            "credit_score": 0.0038237994786576965,
+            "savings_to_income_ratio": 0.8355811717688316,
+            "expense_to_income_ratio": -0.4594977434471836,
+            "emi_to_income_ratio": 0.003618878456325695,
+            "cash_buffer_months": 1.0,
+            "financial_obligation_ratio": -0.01755673373064346
+        },
+        "financial_obligation_ratio": {
+            "monthly_income_usd": -0.2381972813653783,
+            "monthly_expenses_usd": -0.17475159286341688,
+            "savings_usd": -0.1432189123605905,
+            "monthly_emi_usd": 0.6603256569973802,
+            "loan_amount_usd": 0.48065879916757526,
+            "loan_interest_rate_pct": 0.37218811242545485,
+            "debt_to_income_ratio": 0.9989380144355965,
+            "credit_score": 0.011828344145064883,
+            "savings_to_income_ratio": -0.00016629167067497148,
+            "expense_to_income_ratio": 0.04074503332950642,
+            "emi_to_income_ratio": 0.9989378830268043,
+            "cash_buffer_months": -0.01755673373064346,
+            "financial_obligation_ratio": 1.0
+        }
+    },
+    "candidate_strategies": {
+        "Strategy_A_RuleBased": {
+            "description": "Rule-based composite combining high debt, high expenses, and low cash buffer relative to medians.",
+            "class_balance": {
+                "DISTRESSED": 12.746730816679003,
+                "LOW": 87.253269183321
+            },
+            "advantages": "Highly interpretable and captures multi-dimensional stress.",
+            "disadvantages": "Thresholds are data-relative (medians) and might not align with real-world absolute distress.",
+            "leakage_risk": "High if we train the model on the exact ratios used to construct the rule."
+        },
+        "Strategy_B_Quantile": {
+            "description": "Top quartile (p75) of financial_obligation_ratio.",
+            "class_balance": {
+                "DISTRESSED": 25.0,
+                "LOW": 75.0
+            },
+            "advantages": "Guarantees a fixed percentage of positive cases (class balance).",
+            "disadvantages": "Arbitrarily forces 25% into distress even if they are financially healthy.",
+            "leakage_risk": "High if financial_obligation_ratio is a direct model input."
+        },
+        "Strategy_C_AbsoluteThreshold": {
+            "description": "Absolute threshold: financial_obligation_ratio > 1.0 (Outgoings exceed income).",
+            "class_balance": {
+                "DISTRESSED": 33.074265975820374,
+                "LOW": 66.92573402417962
+            },
+            "advantages": "Domain-inspired and highly logical (spending more than earning).",
+            "disadvantages": "May yield very few or very many positive cases depending on dataset distribution.",
+            "leakage_risk": "High if income, emi, and expenses are included as raw inputs."
+        }
+    },
+    "leakage_analysis": "Constructing a target from variables like monthly_income, monthly_expenses, or EMI, and then using those exact variables as features in an ML model creates severe data leakage. The model will simply learn the algebraic formula of the target. To avoid this, CashTwin should either obscure the raw inputs, use alternative behavioral features, or treat the system as a rule-based engine rather than ML if those features are the only ones available.",
+    "recommended_strategy": "Strategy_C_AbsoluteThreshold",
+    "recommended_reason": "It relies on a domain-inspired, absolute financial reality (expenses + debt obligations > income) rather than arbitrary quantiles or sample medians. This makes the target defensible and interpretable. However, to avoid leakage, the model must be trained carefully (e.g., predicting future distress from past behavior, or using non-leakage features)."
+}

@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenMobileMen
               <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h4 className="text-xs font-bold text-slate-900">Distress Alerts & Warnings</h4>
-                  <p className="text-[10px] text-slate-400">Early intervention signals for {selectedCustomer.name}</p>
+                  <p className="text-[10px] text-slate-400">Early intervention signals for {selectedCustomer?.name ?? 'Customer'}</p>
                 </div>
                 <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                   {notifications.length} alerts
@@ -143,14 +143,14 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenMobileMen
         <div className="hidden sm:flex items-center pl-2 border-l border-slate-200">
           <div className="text-right mr-2 hidden md:block">
             <div className="text-xs font-bold text-slate-900 leading-tight">
-              {selectedCustomer.name}
+              {selectedCustomer?.name ?? 'Loading...'}
             </div>
             <div className="text-[10px] text-slate-400 font-mono">
-              Acct {selectedCustomer.accountNumber}
+              Acct {selectedCustomer?.accountNumber ?? '---'}
             </div>
           </div>
           <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-slate-100">
-            {selectedCustomer.name.charAt(0)}
+            {selectedCustomer?.name?.charAt(0) ?? '?'}
           </div>
         </div>
       </div>

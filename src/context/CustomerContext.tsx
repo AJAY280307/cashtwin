@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Customer, SimulationInput } from '../types/financial';
-import { CUSTOMERS, DEFAULT_SIMULATION_INPUTS } from '../data/mockData';
 
 interface CustomerContextType {
   customers: Customer[];
   selectedCustomerId: string;
-  selectedCustomer: Customer;
+  selectedCustomer: Customer | null;
   setSelectedCustomerId: (id: string) => void;
   simulationPreset: SimulationInput | null;
   setSimulationPreset: (preset: SimulationInput | null) => void;
@@ -25,106 +24,55 @@ interface CustomerContextType {
 const CustomerContext = createContext<CustomerContextType | undefined>(undefined);
 
 export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Default to CUST-003 (Rahul Verma - At Risk scenario from the hackathon prompt)
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('CUST-003');
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('U00001');
   const [simulationPreset, setSimulationPreset] = useState<SimulationInput | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<CustomerContextType['notifications']>([]);
 
-  const selectedCustomer =
-    CUSTOMERS.find((c) => c.id === selectedCustomerId) || CUSTOMERS[2];
-
-  const [notifications, setNotifications] = useState([
-    {
-      id: 'notif-1',
-      title: 'Cashflow Stress Predicted',
-      description: 'Projected balance approaches ₹1,200 threshold in 18 days. Action recommended.',
-      timestamp: '12m ago',
-      type: 'warning' as const,
-      read: false,
-    },
-    {
-      id: 'notif-2',
-      title: 'Upcoming EMI Reminder',
-      description: '₹12,000 auto-debit scheduled for Nov 02.',
-      timestamp: '2h ago',
-      type: 'info' as const,
-      read: false,
-    },
-    {
-      id: 'notif-3',
-      title: 'Resilience Score Recalculated',
-      description: 'Score updated to 64/100 following monthly expenditure pattern analysis.',
-      timestamp: '1d ago',
-      type: 'info' as const,
-      read: true,
-    },
-  ]);
-
-  // When customer changes, update notifications to match their context
   useEffect(() => {
-    if (selectedCustomerId === 'CUST-001') {
-      setNotifications([
-        {
-          id: 'notif-c1',
-          title: 'Optimal Resilience Maintained',
-          description: 'Cash buffer covers 48 days of obligations. No intervention needed.',
-          timestamp: '1h ago',
-          type: 'success',
-          read: false,
-        },
-      ]);
-    } else if (selectedCustomerId === 'CUST-002') {
-      setNotifications([
-        {
-          id: 'notif-c2',
-          title: 'Discretionary Outlay Spikes',
-          description: 'Seasonal expenses could tighten end-of-month cushion.',
-          timestamp: '30m ago',
-          type: 'warning',
-          read: false,
-        },
-      ]);
-    } else if (selectedCustomerId === 'CUST-004') {
-      setNotifications([
-        {
-          id: 'notif-c4',
-          title: 'Critical Liquidity Alert',
-          description: 'Deficit of ₹22,400 expected within 6 days. Restructuring urgent.',
-          timestamp: '5m ago',
-          type: 'warning',
-          read: false,
-        },
-      ]);
-    } else {
-      setNotifications([
-        {
-          id: 'notif-1',
-          title: 'Cashflow Stress Predicted',
-          description: 'Projected balance approaches ₹1,200 threshold in 18 days. Action recommended.',
-          timestamp: '12m ago',
-          type: 'warning',
-          read: false,
-        },
-        {
-          id: 'notif-2',
-          title: 'Upcoming EMI Reminder',
-          description: '₹12,000 auto-debit scheduled for Nov 02.',
-          timestamp: '2h ago',
-          type: 'info',
-          read: false,
-        },
-      ]);
-    }
-  }, [selectedCustomerId]);
+    let mounted = true;
+    import('../services/api').then(({ financialApi }) => {
+      financialApi.getCustomers().then((res) => {
+        if (mounted) {
+          setCustomers(res);
+          if (res.length > 0) {
+            // Default to U00001 if exists, otherwise first
+            const hasU1 = res.find(c => c.id === 'U00001');
+            setSelectedCustomerId(hasU1 ? 'U00001' : res[0].id);
+          }
+          setLoading(false);
+        }
+      }).catch(err => {
+        console.error("Failed to load customers:", err);
+        if (mounted) setLoading(false);
+      });
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) || customers[0] || null;
 
   const markNotificationsAsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs text-slate-500 font-medium">Loading CashTwin Intelligence...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <CustomerContext.Provider
       value={{
-        customers: CUSTOMERS,
+        customers,
         selectedCustomerId,
         selectedCustomer,
         setSelectedCustomerId,

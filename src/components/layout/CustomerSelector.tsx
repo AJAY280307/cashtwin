@@ -77,18 +77,18 @@ export const CustomerSelector: React.FC<Props> = ({ variant = 'sidebar' }) => {
           >
             <div className="flex items-center space-x-2.5 min-w-0">
               <div className="w-7 h-7 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-xs text-indigo-700 shrink-0">
-                {selectedCustomer.name.charAt(0)}
+                {selectedCustomer?.name?.charAt(0) ?? "?"}
               </div>
               <div className="truncate">
                 <div className="text-xs font-semibold text-slate-900 truncate flex items-center gap-1.5">
-                  <span>{selectedCustomer.name}</span>
+                  <span>{selectedCustomer?.name ?? "No Customer Available"}</span>
                 </div>
-                <div className="text-[11px] text-slate-500 font-mono">{selectedCustomer.id}</div>
+                <div className="text-[11px] text-slate-500 font-mono">{selectedCustomer?.id ?? "N/A"}</div>
               </div>
             </div>
             <div className="flex items-center space-x-1.5 shrink-0 pl-1">
-              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${getBadgeStyle(selectedCustomer.riskLevel)}`}>
-                {formatLevel(selectedCustomer.riskLevel)}
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${getBadgeStyle(selectedCustomer?.riskLevel || 'HEALTHY')}`}>
+                {formatLevel(selectedCustomer?.riskLevel || 'HEALTHY')}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-transform" />
             </div>
@@ -102,15 +102,15 @@ export const CustomerSelector: React.FC<Props> = ({ variant = 'sidebar' }) => {
           className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-indigo-300 shadow-xs hover:bg-slate-50/80 transition-all"
         >
           <div className="w-6 h-6 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700">
-            {selectedCustomer.name.charAt(0)}
+            {selectedCustomer?.name?.charAt(0) ?? "?"}
           </div>
           <div className="text-left hidden sm:block">
-            <span className="text-xs font-semibold text-slate-800">{selectedCustomer.name}</span>
-            <span className="text-[10px] text-slate-400 block -mt-0.5">{selectedCustomer.id}</span>
+            <span className="text-xs font-semibold text-slate-800">{selectedCustomer?.name ?? "No Customer Available"}</span>
+            <span className="text-[10px] text-slate-400 block -mt-0.5">{selectedCustomer?.id ?? "N/A"}</span>
           </div>
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border flex items-center gap-1 ${getBadgeStyle(selectedCustomer.riskLevel)}`}>
-            {getStatusIcon(selectedCustomer.riskLevel)}
-            <span>{formatLevel(selectedCustomer.riskLevel)}</span>
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border flex items-center gap-1 ${getBadgeStyle(selectedCustomer?.riskLevel || 'HEALTHY')}`}>
+            {getStatusIcon(selectedCustomer?.riskLevel || 'HEALTHY')}
+            <span>{formatLevel(selectedCustomer?.riskLevel || 'HEALTHY')}</span>
           </span>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
         </button>

@@ -21,6 +21,9 @@ export const EarlyWarning: React.FC = () => {
         setData(res);
         setLoading(false);
       }
+    }).catch(err => {
+      console.error(err);
+      if (mounted) setLoading(false);
     });
     return () => {
       mounted = false;
