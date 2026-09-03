@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { login } from '../services/auth';
+import logoImg from '../assets/logo.png';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -44,11 +45,11 @@ export const Login: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center items-center space-x-2">
-          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-md">
-            <ShieldCheck className="w-6 h-6 text-white" />
+        <div className="flex justify-center items-center space-x-2.5">
+          <div className="w-11 h-11 bg-white border border-slate-200/80 rounded-2xl p-1 flex items-center justify-center shadow-xs">
+            <img src={logoImg} alt="CashTwin Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-2xl font-bold tracking-tight text-slate-900">CashTwin</span>
+          <span className="text-2xl font-extrabold tracking-tight text-slate-900">Cash<span className="text-indigo-600">Twin</span></span>
         </div>
         <h2 className="mt-4 text-center text-sm font-medium text-slate-500">
           Your financial future, before it becomes a crisis.

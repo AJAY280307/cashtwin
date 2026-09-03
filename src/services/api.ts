@@ -64,19 +64,6 @@ export function isUsingRealBackend(): boolean {
   return useRealBackend;
 }
 
-/**
- * API Service Layer for CashTwin
- */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
-
-export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000,
-});
-
 let cachedAnalysis: { customerId: string; data: BackendCompleteAnalysisResponse } | null = null;
 
 async function getAnalysis(customerId: string): Promise<BackendCompleteAnalysisResponse> {

@@ -14,6 +14,7 @@ import {
   Bot,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logoImg from '../../assets/logo.png';
 
 interface HeaderProps {
   title: string;
@@ -60,6 +61,10 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenMobileMen
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        <div className="w-8 h-8 rounded-xl overflow-hidden border border-slate-200/80 p-0.5 bg-white shrink-0 lg:hidden shadow-2xs">
+          <img src={logoImg} alt="CashTwin" className="w-full h-full object-contain" />
+        </div>
 
         <div>
           <div className="flex items-center space-x-2">

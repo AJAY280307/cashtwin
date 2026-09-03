@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { CustomerSelector } from './CustomerSelector';
 import { useCustomer } from '../../context/CustomerContext';
+import logoImg from '../../assets/logo.png';
 
 interface Props {
   mobileOpen: boolean;
@@ -148,8 +149,8 @@ export const Sidebar: React.FC<Props> = ({ mobileOpen, setMobileOpen }) => {
               className="flex items-center space-x-3 group"
               onClick={() => setMobileOpen(false)}
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs group-hover:scale-105 transition-transform bg-white border border-slate-200/80 p-0.5 flex items-center justify-center shrink-0">
+                <img src={logoImg} alt="CashTwin Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
