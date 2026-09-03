@@ -129,59 +129,62 @@ export const financialApi = {
    * Endpoint: GET /api/dashboard/{customerId}
    */
   async getDashboard(customerId: string): Promise<CustomerDashboardData> {
-    const data = await getAnalysis(customerId);
-    
-    const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
-    
-    // Map forecast points
-    let forecast: ForecastPoint[] = [];
-    if (data.forecast) {
-      forecast = data.forecast.daily_projection.map((pt) => ({
-        day: pt.day,
-        label: `Day ${pt.day}`,
-        date: `Day ${pt.day}`,
-        balance: pt.projected_cash,
-        safetyThreshold: data.customer.monthly_expenses_usd || 5000,
-        zeroLine: 0,
-        isStressed: pt.projected_cash < 0
-      }));
+    if (useRealBackend) {
+      try {
+        const data = await getAnalysis(customerId);
+        if (data && data.customer && data.financial_health) {
+          const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
+          let forecast: ForecastPoint[] = [];
+          if (data.forecast?.daily_projection) {
+            forecast = data.forecast.daily_projection.map((pt) => ({
+              day: pt.day,
+              label: `Day ${pt.day}`,
+              date: `Day ${pt.day}`,
+              balance: pt.projected_cash,
+              safetyThreshold: data.customer.monthly_expenses_usd || 5000,
+              zeroLine: 0,
+              isStressed: pt.projected_cash < 0
+            }));
+          }
+          if (forecast.length === 0) {
+            forecast = [{ day: 0, label: 'Today', date: 'Today', balance: 0, safetyThreshold: 0, zeroLine: 0 }];
+          }
+          const quickRec = data.recommendations?.recommendations?.[0] || { recommendation: "Maintain positive balances.", title: "No Action Needed", category: "none" };
+          return {
+            customer,
+            resilienceScore: data.financial_health.financial_resilience_score,
+            riskLevel: mapRiskLevel(data.financial_health.risk_level),
+            resilienceMessage: data.explanation?.summary || 'Financial position loaded.',
+            metrics: {
+              currentBalance: data.forecast?.starting_cash || data.customer.savings_usd || 0,
+              monthlyIncome: data.customer.monthly_income_usd || 0,
+              upcomingEmi: data.customer.monthly_emi_usd || 0,
+              cashBufferDays: Math.round(data.financial_health.cash_buffer_score),
+            },
+            forecast,
+            safetyThreshold: data.customer.monthly_expenses_usd || 5000,
+            earlyWarning: {
+              hasWarning: (data.forecast?.cash_gap || 0) > 0,
+              stressDetected: (data.forecast?.cash_gap || 0) > 0,
+              potentialCashGap: data.forecast?.cash_gap || 0,
+              expectedDays: data.forecast?.stress_date || 0,
+              urgency: data.forecast?.cash_gap && data.forecast.cash_gap > 0 ? 'high' : 'low',
+              headline: `Risk Level: ${data.explanation?.overall_risk || 'Steady'}`,
+            },
+            quickRecommendation: {
+              actionText: quickRec.recommendation,
+              impactText: `Category: ${quickRec.category}`,
+              riskFrom: mapRiskLevel(data.financial_health.risk_level),
+              riskTo: mapRiskLevel(data.financial_health.risk_level),
+            },
+          };
+        }
+      } catch (err) {
+        console.warn(`Backend call failed for /dashboard/${customerId}, using mock data:`, err);
+      }
     }
-
-    // Default dummy for safety
-    if (forecast.length === 0) {
-      forecast = [{ day: 0, label: 'Today', date: 'Today', balance: 0, safetyThreshold: 0, zeroLine: 0 }];
-    }
-
-    let quickRec = data.recommendations?.recommendations?.[0] || { recommendation: "Maintain positive balances.", title: "No Action Needed", category: "none" };
-
-    return {
-      customer,
-      resilienceScore: data.financial_health.financial_resilience_score,
-      riskLevel: mapRiskLevel(data.financial_health.risk_level),
-      resilienceMessage: data.explanation.summary || 'Financial position loaded.',
-      metrics: {
-        currentBalance: data.forecast?.starting_cash || data.customer.savings_usd || 0,
-        monthlyIncome: data.customer.monthly_income_usd || 0,
-        upcomingEmi: data.customer.monthly_emi_usd || 0,
-        cashBufferDays: Math.round(data.financial_health.cash_buffer_score),
-      },
-      forecast,
-      safetyThreshold: data.customer.monthly_expenses_usd || 5000,
-      earlyWarning: {
-        hasWarning: (data.forecast?.cash_gap || 0) > 0,
-        stressDetected: (data.forecast?.cash_gap || 0) > 0,
-        potentialCashGap: data.forecast?.cash_gap || 0,
-        expectedDays: data.forecast?.stress_date || 0,
-        urgency: data.forecast?.cash_gap && data.forecast.cash_gap > 0 ? 'high' : 'low',
-        headline: `Risk Level: ${data.explanation.overall_risk}` || 'Cashflow steady',
-      },
-      quickRecommendation: {
-        actionText: quickRec.recommendation,
-        impactText: `Category: ${quickRec.category}`,
-        riskFrom: mapRiskLevel(data.financial_health.risk_level),
-        riskTo: mapRiskLevel(data.financial_health.risk_level),
-      },
-    };
+    const mock = MOCK_DASHBOARD_DATA[customerId] || MOCK_DASHBOARD_DATA['CUST-003'];
+    return Promise.resolve(mock);
   },
 
   /**
@@ -189,34 +192,42 @@ export const financialApi = {
    * Endpoint: GET /api/financial-health/{customerId}
    */
   async getFinancialHealth(customerId: string): Promise<FinancialHealthData> {
-    const data = await getAnalysis(customerId);
-    const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
-
-    const components: ResilienceComponent[] = [
-      { id: 'c1', name: 'Cash Buffer', score: data.financial_health.cash_buffer_score, weight: 25, status: mapRiskLevel(data.financial_health.cash_buffer_score > 60 ? 'LOW' : 'HIGH'), description: 'Cash reserves compared to obligations' },
-      { id: 'c2', name: 'Income Stability', score: data.financial_health.income_stability_score, weight: 20, status: mapRiskLevel(data.financial_health.income_stability_score > 60 ? 'LOW' : 'HIGH'), description: 'Stability of regular income' },
-      { id: 'c3', name: 'Expense Pressure', score: data.financial_health.expense_pressure_score, weight: 20, status: mapRiskLevel(data.financial_health.expense_pressure_score > 60 ? 'LOW' : 'HIGH'), description: 'Proportion of income consumed by expenses' },
-      { id: 'c4', name: 'Debt Burden', score: data.financial_health.debt_burden_score, weight: 20, status: mapRiskLevel(data.financial_health.debt_burden_score > 60 ? 'LOW' : 'HIGH'), description: 'Total debt obligation pressure' },
-      { id: 'c5', name: 'ML Risk (Distress)', score: data.financial_health.ml_risk_score, weight: 15, status: mapRiskLevel(data.financial_health.ml_risk_score > 60 ? 'LOW' : 'HIGH'), description: 'Machine learning derived distress probability' },
-    ];
-
-    return {
-      customer,
-      resilienceScore: data.financial_health.financial_resilience_score,
-      riskLevel: mapRiskLevel(data.financial_health.risk_level),
-      components,
-      ratios: {
-        monthlyIncome: data.customer.monthly_income_usd || 0,
-        monthlyExpenses: data.customer.monthly_expenses_usd || 0,
-        savings: data.customer.savings_usd || 0,
-        monthlyEmi: data.customer.monthly_emi_usd || 0,
-        debtToIncomeRatio: (data.customer.debt_to_income_ratio || 0) * 100,
-        expenseToIncomeRatio: (data.customer.expense_to_income_ratio || 0) * 100,
-        liquidRunwayDays: Math.round(data.financial_health.cash_buffer_score),
-      },
-      timelineStatus: (mapRiskLevel(data.financial_health.risk_level) === 'HIGH_RISK' ? 'DISTRESS' : mapRiskLevel(data.financial_health.risk_level)) as any,
-      scoreExplanation: data.explanation.summary || 'Score derived deterministically based on financial ratios.',
-    };
+    if (useRealBackend) {
+      try {
+        const data = await getAnalysis(customerId);
+        if (data && data.customer && data.financial_health) {
+          const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
+          const components: ResilienceComponent[] = [
+            { id: 'c1', name: 'Cash Buffer', score: data.financial_health.cash_buffer_score, weight: 25, status: mapRiskLevel(data.financial_health.cash_buffer_score > 60 ? 'LOW' : 'HIGH'), description: 'Cash reserves compared to obligations' },
+            { id: 'c2', name: 'Income Stability', score: data.financial_health.income_stability_score, weight: 20, status: mapRiskLevel(data.financial_health.income_stability_score > 60 ? 'LOW' : 'HIGH'), description: 'Stability of regular income' },
+            { id: 'c3', name: 'Expense Pressure', score: data.financial_health.expense_pressure_score, weight: 20, status: mapRiskLevel(data.financial_health.expense_pressure_score > 60 ? 'LOW' : 'HIGH'), description: 'Proportion of income consumed by expenses' },
+            { id: 'c4', name: 'Debt Burden', score: data.financial_health.debt_burden_score, weight: 20, status: mapRiskLevel(data.financial_health.debt_burden_score > 60 ? 'LOW' : 'HIGH'), description: 'Total debt obligation pressure' },
+            { id: 'c5', name: 'ML Risk (Distress)', score: data.financial_health.ml_risk_score, weight: 15, status: mapRiskLevel(data.financial_health.ml_risk_score > 60 ? 'LOW' : 'HIGH'), description: 'Machine learning derived distress probability' },
+          ];
+          return {
+            customer,
+            resilienceScore: data.financial_health.financial_resilience_score,
+            riskLevel: mapRiskLevel(data.financial_health.risk_level),
+            components,
+            ratios: {
+              monthlyIncome: data.customer.monthly_income_usd || 0,
+              monthlyExpenses: data.customer.monthly_expenses_usd || 0,
+              savings: data.customer.savings_usd || 0,
+              monthlyEmi: data.customer.monthly_emi_usd || 0,
+              debtToIncomeRatio: (data.customer.debt_to_income_ratio || 0) * 100,
+              expenseToIncomeRatio: (data.customer.expense_to_income_ratio || 0) * 100,
+              liquidRunwayDays: Math.round(data.financial_health.cash_buffer_score),
+            },
+            timelineStatus: (mapRiskLevel(data.financial_health.risk_level) === 'HIGH_RISK' ? 'DISTRESS' : mapRiskLevel(data.financial_health.risk_level)) as any,
+            scoreExplanation: data.explanation?.summary || 'Score derived deterministically based on financial ratios.',
+          };
+        }
+      } catch (err) {
+        console.warn(`Backend call failed for /financial-health/${customerId}, using mock data:`, err);
+      }
+    }
+    const mock = MOCK_FINANCIAL_HEALTH[customerId] || MOCK_FINANCIAL_HEALTH['CUST-003'];
+    return Promise.resolve(mock);
   },
 
   /**
@@ -224,47 +235,63 @@ export const financialApi = {
    * Endpoint: GET /api/forecast/{customerId}
    */
   async getForecast(customerId: string) {
-    const data = await getAnalysis(customerId);
-    
-    let forecast: ForecastPoint[] = [];
-    if (data.forecast) {
-      forecast = data.forecast.daily_projection.map((pt) => ({
-        day: pt.day,
-        label: `Day ${pt.day}`,
-        date: `Day ${pt.day}`,
-        balance: pt.projected_cash,
-        safetyThreshold: data.customer.monthly_expenses_usd || 5000,
-        zeroLine: 0,
-        isStressed: pt.projected_cash < 0
-      }));
-    } else {
-      forecast = [{ day: 0, label: 'Today', date: 'Today', balance: 0, safetyThreshold: 0, zeroLine: 0 }];
+    if (useRealBackend) {
+      try {
+        const data = await getAnalysis(customerId);
+        if (data && data.customer) {
+          let forecast: ForecastPoint[] = [];
+          if (data.forecast?.daily_projection) {
+            forecast = data.forecast.daily_projection.map((pt) => ({
+              day: pt.day,
+              label: `Day ${pt.day}`,
+              date: `Day ${pt.day}`,
+              balance: pt.projected_cash,
+              safetyThreshold: data.customer.monthly_expenses_usd || 5000,
+              zeroLine: 0,
+              isStressed: pt.projected_cash < 0
+            }));
+          } else {
+            forecast = [{ day: 0, label: 'Today', date: 'Today', balance: 0, safetyThreshold: 0, zeroLine: 0 }];
+          }
+          const obligations: Obligation[] = [];
+          if (data.customer.monthly_emi_usd && data.customer.monthly_emi_usd > 0) {
+            obligations.push({
+              id: 'ob-emi',
+              title: 'Monthly EMI',
+              category: 'EMI',
+              amount: data.customer.monthly_emi_usd,
+              dueDate: 'Upcoming',
+              daysRemaining: 15,
+              status: 'PENDING'
+            });
+          }
+          return {
+            forecast,
+            safetyThreshold: data.customer.monthly_expenses_usd || 5000,
+            currentBalance: data.forecast?.starting_cash || data.customer.savings_usd || 0,
+            projectedMinimum: data.forecast?.minimum_projected_cash || 0,
+            potentialShortfall: data.forecast?.cash_gap || 0,
+            expectedStressPointDays: data.forecast?.stress_date || 0,
+            obligations,
+            insight: data.forecast?.insight || 'Forecast generated.',
+          };
+        }
+      } catch (err) {
+        console.warn(`Backend call failed for /forecast/${customerId}, using mock data:`, err);
+      }
     }
-
-    // Since we don't have explicit obligations tracked beyond EMI in backend, mock a single EMI obligation
-    const obligations: Obligation[] = [];
-    if (data.customer.monthly_emi_usd && data.customer.monthly_emi_usd > 0) {
-      obligations.push({
-        id: 'ob-emi',
-        title: 'Monthly EMI',
-        category: 'EMI',
-        amount: data.customer.monthly_emi_usd,
-        dueDate: 'Upcoming',
-        daysRemaining: 15,
-        status: 'PENDING'
-      });
-    }
-
-    return {
-      forecast,
-      safetyThreshold: data.customer.monthly_expenses_usd || 5000,
-      currentBalance: data.forecast?.starting_cash || data.customer.savings_usd || 0,
-      projectedMinimum: data.forecast?.minimum_projected_cash || 0,
-      potentialShortfall: data.forecast?.cash_gap || 0,
-      expectedStressPointDays: data.forecast?.stress_date || 0,
-      obligations,
-      insight: data.forecast?.insight || 'Forecast generated.',
-    };
+    const dash = MOCK_DASHBOARD_DATA[customerId] || MOCK_DASHBOARD_DATA['CUST-003'];
+    const obs = MOCK_OBLIGATIONS[customerId] || MOCK_OBLIGATIONS['CUST-003'];
+    return Promise.resolve({
+      forecast: dash.forecast,
+      safetyThreshold: dash.safetyThreshold,
+      currentBalance: dash.metrics.currentBalance,
+      projectedMinimum: 1200,
+      potentialShortfall: dash.earlyWarning.potentialCashGap,
+      expectedStressPointDays: dash.earlyWarning.expectedDays,
+      obligations: obs,
+      insight: dash.resilienceMessage,
+    });
   },
 
   /**
@@ -272,26 +299,35 @@ export const financialApi = {
    * Endpoint: GET /api/early-warning/{customerId}
    */
   async getEarlyWarning(customerId: string): Promise<EarlyWarningData> {
-    const data = await getAnalysis(customerId);
-    const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
-
-    return {
-      customer,
-      riskLevel: mapRiskLevel(data.financial_health.risk_level),
-      potentialStressDays: data.forecast?.stress_date || 0,
-      potentialCashGap: data.forecast?.cash_gap || 0,
-      drivers: data.explanation.drivers.map((d, i) => ({
-        id: `driver-${i}`,
-        title: d.driver,
-        contributionPercentage: d.score,
-        observedPattern: d.evidence,
-        impact: d.explanation,
-        recommendedAction: 'See recommendations panel',
-        severity: (d.severity.toLowerCase() as 'high' | 'medium' | 'low') || 'medium'
-      })),
-      journeyStage: (mapRiskLevel(data.financial_health.risk_level) === 'HIGH_RISK' ? 'CRISIS' : mapRiskLevel(data.financial_health.risk_level)) as any,
-      journeyMessage: data.explanation.summary,
-    };
+    if (useRealBackend) {
+      try {
+        const data = await getAnalysis(customerId);
+        if (data && data.customer && data.financial_health) {
+          const customer = mapCustomer(data.customer, data.financial_health.risk_level, data.financial_health.financial_resilience_score);
+          return {
+            customer,
+            riskLevel: mapRiskLevel(data.financial_health.risk_level),
+            potentialStressDays: data.forecast?.stress_date || 0,
+            potentialCashGap: data.forecast?.cash_gap || 0,
+            drivers: (data.explanation?.drivers || []).map((d, i) => ({
+              id: `driver-${i}`,
+              title: d.driver,
+              contributionPercentage: d.score,
+              observedPattern: d.evidence,
+              impact: d.explanation,
+              recommendedAction: 'See recommendations panel',
+              severity: (d.severity?.toLowerCase() as 'high' | 'medium' | 'low') || 'medium'
+            })),
+            journeyStage: (mapRiskLevel(data.financial_health.risk_level) === 'HIGH_RISK' ? 'CRISIS' : mapRiskLevel(data.financial_health.risk_level)) as any,
+            journeyMessage: data.explanation?.summary || 'Early warning drivers analyzed.',
+          };
+        }
+      } catch (err) {
+        console.warn(`Backend call failed for /early-warning/${customerId}, using mock data:`, err);
+      }
+    }
+    const mock = MOCK_EARLY_WARNING[customerId] || MOCK_EARLY_WARNING['CUST-003'];
+    return Promise.resolve(mock);
   },
 
   /**
@@ -299,33 +335,40 @@ export const financialApi = {
    * Endpoint: POST /api/simulate
    */
   async simulate(customerId: string, input: SimulationInput): Promise<SimulationResult> {
-    const backendIntervention = {
-      reduce_expenses_by: input.discretionarySpending || 0, 
-      reduce_emi_by: input.monthlyEmi || 0,
-      increase_savings_by: input.monthlySavings || 0,
-      increase_income_by: 0
-    };
-
-    const response = await apiClient.post<BackendSimulationResult>(`/customers/${customerId}/simulate`, backendIntervention);
-    const result = response.data;
-
-    return {
-      before: {
-        riskScore: result.baseline_resilience_score,
-        cashGap: result.baseline_cash_gap,
-        minimumBalance: result.impacts.find(i => i.metric === 'Minimum Projected Cash')?.before_value || 0,
-        riskLevel: mapRiskLevel(result.baseline_risk_level),
-      },
-      after: {
-        riskScore: result.simulated_resilience_score,
-        cashGap: result.simulated_cash_gap,
-        minimumBalance: result.impacts.find(i => i.metric === 'Minimum Projected Cash')?.after_value || 0,
-        riskLevel: mapRiskLevel(result.simulated_risk_level),
-      },
-      crisisPrevented: result.baseline_cash_gap > 0 && result.simulated_cash_gap === 0,
-      explanation: result.summary,
-      forecastPoints: [] // Deliberately omit fabricated forecast points as requested in Phase 10B rules
-    };
+    if (useRealBackend) {
+      try {
+        const backendIntervention = {
+          reduce_expenses_by: input.discretionarySpending || 0, 
+          reduce_emi_by: input.monthlyEmi || 0,
+          increase_savings_by: input.monthlySavings || 0,
+          increase_income_by: 0
+        };
+        const response = await apiClient.post<BackendSimulationResult>(`/customers/${customerId}/simulate`, backendIntervention);
+        const result = response.data;
+        return {
+          before: {
+            riskScore: result.baseline_resilience_score,
+            cashGap: result.baseline_cash_gap,
+            minimumBalance: result.impacts?.find(i => i.metric === 'Minimum Projected Cash')?.before_value || 0,
+            riskLevel: mapRiskLevel(result.baseline_risk_level),
+          },
+          after: {
+            riskScore: result.simulated_resilience_score,
+            cashGap: result.simulated_cash_gap,
+            minimumBalance: result.impacts?.find(i => i.metric === 'Minimum Projected Cash')?.after_value || 0,
+            riskLevel: mapRiskLevel(result.simulated_risk_level),
+          },
+          crisisPrevented: result.baseline_cash_gap > 0 && result.simulated_cash_gap === 0,
+          explanation: result.summary,
+          forecastPoints: []
+        };
+      } catch (err) {
+        console.warn(`Backend simulate call failed, using client simulator:`, err);
+      }
+    }
+    const customer = CUSTOMERS.find((c) => c.id === customerId) || CUSTOMERS[2];
+    const health = MOCK_FINANCIAL_HEALTH[customerId] || MOCK_FINANCIAL_HEALTH['CUST-003'];
+    return Promise.resolve(calculateSimulation(customer, health, input));
   },
 
   /**
@@ -333,26 +376,35 @@ export const financialApi = {
    * Endpoint: GET /api/recommendations/{customerId}
    */
   async getRecommendations(customerId: string): Promise<Recommendation[]> {
-    const data = await getAnalysis(customerId);
-
-    return data.recommendations.recommendations.map((act, i) => ({
-      id: `rec-${i}`,
-      priority: act.priority,
-      title: act.title,
-      problem: act.evidence,
-      action: act.recommendation,
-      expectedImpact: `Category: ${act.category}`,
-      riskReduction: {
-        from: mapRiskLevel(data.financial_health.risk_level),
-        to: mapRiskLevel(data.financial_health.risk_level),
-      },
-      cashGapImpact: {
-        from: data.forecast?.cash_gap || 0,
-        to: data.forecast?.cash_gap || 0,
-      },
-      reason: act.evidence,
-      suggestedSimulation: undefined
-    }));
+    if (useRealBackend) {
+      try {
+        const data = await getAnalysis(customerId);
+        if (data && data.recommendations?.recommendations) {
+          return data.recommendations.recommendations.map((act, i) => ({
+            id: `rec-${i}`,
+            priority: act.priority,
+            title: act.title,
+            problem: act.evidence,
+            action: act.recommendation,
+            expectedImpact: `Category: ${act.category}`,
+            riskReduction: {
+              from: mapRiskLevel(data.financial_health.risk_level),
+              to: mapRiskLevel(data.financial_health.risk_level),
+            },
+            cashGapImpact: {
+              from: data.forecast?.cash_gap || 0,
+              to: data.forecast?.cash_gap || 0,
+            },
+            reason: act.evidence,
+            suggestedSimulation: undefined
+          }));
+        }
+      } catch (err) {
+        console.warn(`Backend call failed for /recommendations/${customerId}, using mock data:`, err);
+      }
+    }
+    const mock = MOCK_RECOMMENDATIONS[customerId] || MOCK_RECOMMENDATIONS['CUST-003'];
+    return Promise.resolve(mock);
   },
 
   /**

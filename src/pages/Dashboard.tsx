@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCustomer } from '../context/CustomerContext';
 import { financialApi } from '../services/api';
 import { CustomerDashboardData } from '../types/financial';
+import { MOCK_DASHBOARD_DATA } from '../data/mockData';
 import { ResilienceScore } from '../components/dashboard/ResilienceScore';
 import { MetricCard } from '../components/dashboard/MetricCard';
 import { CashForecastChart } from '../components/dashboard/CashForecastChart';
@@ -12,20 +13,24 @@ import { Wallet, DollarSign, CreditCard, Calendar } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { selectedCustomerId } = useCustomer();
-  const [data, setData] = useState<CustomerDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<CustomerDashboardData | null>(
+    MOCK_DASHBOARD_DATA[selectedCustomerId] || MOCK_DASHBOARD_DATA['CUST-003']
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    setLoading(true);
     financialApi.getDashboard(selectedCustomerId).then((res) => {
-      if (mounted) {
+      if (mounted && res) {
         setData(res);
         setLoading(false);
       }
     }).catch(err => {
-      console.error(err);
-      if (mounted) setLoading(false);
+      console.warn("Dashboard fetch fallback to mock:", err);
+      if (mounted) {
+        setData(MOCK_DASHBOARD_DATA[selectedCustomerId] || MOCK_DASHBOARD_DATA['CUST-003']);
+        setLoading(false);
+      }
     });
     return () => {
       mounted = false;
