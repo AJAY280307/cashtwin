@@ -5,6 +5,9 @@ import { Header } from './Header';
 import { SettingsModal } from './SettingsModal';
 import { BachatMitra } from '../copilot/BachatMitra';
 import { useCustomer } from '../../context/CustomerContext';
+import { AuthModal } from '../auth/AuthModal';
+import { UserProfileModal } from '../auth/UserProfileModal';
+import { SecurityModal } from '../auth/SecurityModal';
 
 export const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -147,6 +150,11 @@ export const Layout: React.FC = () => {
 
       {/* Settings / Demo Persona Modal */}
       <SettingsModal />
+
+      {/* Authentication & Profile Modals */}
+      <AuthModal />
+      <UserProfileModal />
+      <SecurityModal />
     </div>
   );
 };

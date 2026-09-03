@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
-import { login } from '../services/auth';
+import { Eye, EyeOff, ShieldCheck, Mail, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const { login, loginAsDemo } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Basic validation
     if (!email) {
       setError('Please enter your email address.');
       return;
@@ -32,38 +34,75 @@ export const Login: React.FC = () => {
 
     try {
       setIsLoading(true);
-      await login(email, password);
-      // Navigate to dashboard on success
+      await login(email, password, rememberMe);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDemoLogin = () => {
+    loginAsDemo();
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center items-center space-x-2.5">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+        <Link to="/" className="inline-flex justify-center items-center space-x-2.5">
           <div className="w-11 h-11 bg-white border border-slate-200/80 rounded-2xl p-1 flex items-center justify-center shadow-xs">
             <img src={logoImg} alt="CashTwin Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-2xl font-extrabold tracking-tight text-slate-900">Cash<span className="text-indigo-600">Twin</span></span>
-        </div>
+          <span className="text-2xl font-extrabold tracking-tight text-slate-900">
+            Cash<span className="text-indigo-600">Twin</span>
+          </span>
+        </Link>
         <h2 className="mt-4 text-center text-sm font-medium text-slate-500">
-          Your financial future, before it becomes a crisis.
+          Proactive Financial Distress Prevention Platform
         </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm border border-slate-200/60 sm:rounded-2xl sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="bg-white py-8 px-6 shadow-xl shadow-slate-200/50 border border-slate-100 sm:rounded-2xl sm:px-10 relative overflow-hidden">
+          {/* Subtle gradient top accent */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500" />
+
+          <div className="mb-6 text-center">
+            <div className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-semibold mb-2.5 border border-purple-100">
+              <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+              <span>Secure Banking Environment</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Welcome Back 👋
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Sign in to continue monitoring your financial health.
+            </p>
+          </div>
+
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+              {error}
+            </div>
+          )}
+
+          {forgotSent && (
+            <div className="mb-5 p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-medium">
+              Password recovery instructions have been sent to your email.
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email address
+              <label htmlFor="email" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Email Address
               </label>
-              <div className="mt-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Mail className="w-4 h-4" />
+                </div>
                 <input
                   id="email"
                   name="email"
@@ -71,17 +110,20 @@ export const Login: React.FC = () => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="you@company.com"
+                  className="block w-full rounded-xl border border-slate-200 pl-10 pr-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  placeholder="rahul.verma@cashtwin.bank"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="password" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Lock className="w-4 h-4" />
+                </div>
                 <input
                   id="password"
                   name="password"
@@ -89,79 +131,80 @@ export const Login: React.FC = () => {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 pr-10 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  className="block w-full rounded-xl border border-slate-200 pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-500 focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-hidden"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" aria-hidden="true" />
-                  ) : (
-                    <Eye className="h-5 w-5" aria-hidden="true" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="text-sm text-rose-600 font-medium">
-                {error}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center space-x-2 text-xs text-slate-600 cursor-pointer select-none">
                 <input
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
-                  Remember me
-                </label>
-              </div>
+                <span className="font-medium">Remember me</span>
+              </label>
 
-              <div className="text-sm">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
-                </a>
-              </div>
+              <button
+                type="button"
+                onClick={() => setForgotSent(true)}
+                className="text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors focus:outline-hidden"
+              >
+                Forgot Password?
+              </button>
             </div>
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex w-full justify-center rounded-lg border border-transparent bg-slate-900 py-2.5 px-4 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to CashTwin</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-slate-500">Don't have an account?</span>
-              </div>
-            </div>
+          {/* Quick Demo Button */}
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className="w-full py-2 px-3 rounded-lg bg-slate-50 hover:bg-purple-50/60 border border-slate-200 hover:border-purple-200 text-slate-700 hover:text-purple-700 text-xs font-medium transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+              <span>One-Click Demo: Sign in as Rahul Verma</span>
+            </button>
+          </div>
 
-            <div className="mt-6">
-              <Link
-                to="/signup"
-                className="flex w-full justify-center rounded-lg border border-slate-300 bg-white py-2.5 px-4 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-              >
-                Sign Up
-              </Link>
-            </div>
+          <div className="mt-6 text-center text-xs text-slate-500">
+            Don't have an account?{' '}
+            <Link to="/signup" className="font-bold text-purple-600 hover:text-purple-800 hover:underline">
+              Create Account
+            </Link>
           </div>
         </div>
       </div>
