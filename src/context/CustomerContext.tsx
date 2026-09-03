@@ -143,18 +143,10 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (mounted) setLoading(false);
       });
     });
-    if (loading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center space-y-3">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs text-slate-500 font-medium">Loading CashTwin Intelligence...</span>
-        </div>
-      </div>
-    );
-  }
 
-  return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) || customers[0] || null;
