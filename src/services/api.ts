@@ -22,6 +22,9 @@ import {
   MonthlyStoryData,
   AdvisorDashboardData,
   DataPrivacyConsent,
+  RiskLevel,
+  ForecastPoint,
+  ResilienceComponent,
 } from '../types/financial';
 import {
   CUSTOMERS,
@@ -351,24 +354,27 @@ export const financialApi = {
             cashGap: result.baseline_cash_gap,
             minimumBalance: result.impacts?.find(i => i.metric === 'Minimum Projected Cash')?.before_value || 0,
             riskLevel: mapRiskLevel(result.baseline_risk_level),
+            runwayDays: 14,
+            pressureScore: 100 - result.baseline_resilience_score,
           },
           after: {
             riskScore: result.simulated_resilience_score,
             cashGap: result.simulated_cash_gap,
             minimumBalance: result.impacts?.find(i => i.metric === 'Minimum Projected Cash')?.after_value || 0,
             riskLevel: mapRiskLevel(result.simulated_risk_level),
+            runwayDays: result.simulated_cash_gap === 0 ? 30 : 14,
+            pressureScore: 100 - result.simulated_resilience_score,
           },
           crisisPrevented: result.baseline_cash_gap > 0 && result.simulated_cash_gap === 0,
           explanation: result.summary,
+          savingsImpact: 0,
           forecastPoints: []
         };
       } catch (err) {
         console.warn(`Backend simulate call failed, using client simulator:`, err);
       }
     }
-    const customer = CUSTOMERS.find((c) => c.id === customerId) || CUSTOMERS[2];
-    const health = MOCK_FINANCIAL_HEALTH[customerId] || MOCK_FINANCIAL_HEALTH['CUST-003'];
-    return Promise.resolve(calculateSimulation(customer, health, input));
+    return Promise.resolve(calculateSimulation(customerId, input));
   },
 
   /**

@@ -341,6 +341,7 @@ export interface AdvisorCustomerRecord {
   id: string;
   anonymousId: string;
   alias: string;
+  originalId?: string;
   riskLevel: RiskLevel;
   resilienceScore: number;
   bufferDaysRemaining: number;

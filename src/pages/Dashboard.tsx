@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
   const { customer, resilienceScore, riskLevel, resilienceMessage, metrics, forecast, safetyThreshold, earlyWarning, quickRecommendation } = data;
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-2">
       {/* Top Banner Context */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>

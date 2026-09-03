@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { SettingsModal } from './SettingsModal';
@@ -120,26 +120,28 @@ export const Layout: React.FC = () => {
           onOpenMobileMenu={() => setMobileOpen(true)}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-6 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
 
-        {/* Global Responsible Banking Footer */}
-        <footer className="border-t border-slate-200/80 bg-white px-4 sm:px-8 py-4 text-xs text-slate-500">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-slate-800 tracking-tight">CASHTWIN</span>
-              <span>&bull;</span>
-              <span className="text-slate-400">
-                DETECT &rarr; PREDICT &rarr; EXPLAIN &rarr; SIMULATE &rarr; INTERVENE &rarr; PREVENT
-              </span>
+        {/* Consistent Minimal Footer */}
+        <footer className="mt-auto border-t border-slate-200/80 bg-white/80 backdrop-blur-xs px-4 sm:px-8 py-3.5 text-xs text-slate-500">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
+            <div className="text-xs text-slate-500 font-medium tracking-tight">
+              &copy; 2026 CashTwin Bank AI. All rights reserved.
             </div>
-            <div className="flex items-center space-x-4 text-[11px] text-slate-400">
-              <span>Zero Predatory Lending</span>
-              <span>&bull;</span>
-              <span>Explainable AI Attribution</span>
-              <span>&bull;</span>
-              <span>Bank Hardship Protection</span>
+            <div className="flex items-center space-x-3 sm:space-x-4 text-xs font-medium text-slate-500">
+              <Link to="/transparency" className="hover:text-indigo-600 transition-colors">
+                Privacy Policy
+              </Link>
+              <span className="text-slate-300">|</span>
+              <Link to="/transparency" className="hover:text-indigo-600 transition-colors">
+                Terms of Service
+              </Link>
+              <span className="text-slate-300">|</span>
+              <Link to="/bank-support" className="hover:text-indigo-600 transition-colors">
+                Support
+              </Link>
             </div>
           </div>
         </footer>
