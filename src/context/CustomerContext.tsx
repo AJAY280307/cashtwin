@@ -123,24 +123,26 @@ export const CustomerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     [accessibility.voiceFriendly]
   );
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>(CUSTOMERS);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     import('../services/api').then(({ financialApi }) => {
       financialApi.getCustomers().then((res) => {
-        if (mounted) {
+        if (mounted && res && res.length > 0) {
           setCustomers(res);
-          if (res.length > 0) {
-            const hasU1 = res.find(c => c.id === 'U00001');
-            setSelectedCustomerId(hasU1 ? 'U00001' : res[0].id);
-          }
+          const hasC3 = res.find(c => c.id === 'CUST-003');
+          const hasU1 = res.find(c => c.id === 'U00001');
+          setSelectedCustomerId(hasC3 ? 'CUST-003' : (hasU1 ? 'U00001' : res[0].id));
           setLoading(false);
         }
       }).catch(err => {
-        console.error("Failed to load customers:", err);
-        if (mounted) setLoading(false);
+        console.warn("Using offline mock customers:", err);
+        if (mounted) {
+          setCustomers(CUSTOMERS);
+          setLoading(false);
+        }
       });
     });
 

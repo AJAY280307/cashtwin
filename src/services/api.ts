@@ -105,16 +105,23 @@ export const financialApi = {
    * Fetch list of demo customers
    */
   async getCustomers(): Promise<Customer[]> {
-    const response = await apiClient.get<BackendCustomerListResponse>('/customers');
-    return response.data.customers.map(c => ({
-      id: String(c.user_id),
-      name: c.display_name,
-      accountNumber: `ΓÇóΓÇóΓÇóΓÇó ${String(c.user_id).substring(0,4)}`,
-      riskLevel: 'HEALTHY' as RiskLevel, // Default until selected
-      resilienceScore: 0,
-      occupation: 'Customer',
-      monthlyIncome: 0
-    }));
+    if (useRealBackend) {
+      try {
+        const response = await apiClient.get<BackendCustomerListResponse>('/customers');
+        return response.data.customers.map(c => ({
+          id: String(c.user_id),
+          name: c.display_name,
+          accountNumber: `•••• ${String(c.user_id).substring(0,4)}`,
+          riskLevel: 'HEALTHY' as const,
+          resilienceScore: 75,
+          occupation: 'Customer',
+          monthlyIncome: 50000
+        }));
+      } catch (err) {
+        console.warn('Backend call failed for /customers, using mock CUSTOMERS:', err);
+      }
+    }
+    return Promise.resolve(CUSTOMERS);
   },
 
   /**
