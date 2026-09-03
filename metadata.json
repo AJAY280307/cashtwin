@@ -1,0 +1,6 @@
+{
+  "name": "CashTwin",
+  "description": "Proactive financial intelligence and early-warning system to prevent financial distress before it becomes a crisis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
