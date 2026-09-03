@@ -7,6 +7,7 @@ import { MetricCard } from '../components/dashboard/MetricCard';
 import { CashForecastChart } from '../components/dashboard/CashForecastChart';
 import { EarlyWarningCard } from '../components/dashboard/EarlyWarningCard';
 import { QuickRecommendation } from '../components/dashboard/QuickRecommendation';
+import { MonthlyFinancialStory } from '../components/dashboard/MonthlyFinancialStory';
 import { Wallet, DollarSign, CreditCard, Calendar } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
@@ -115,6 +116,11 @@ export const Dashboard: React.FC = () => {
           variant={metrics.cashBufferDays < 20 ? 'warning' : 'default'}
           tag={metrics.cashBufferDays < 20 ? 'Tight' : 'Comfortable'}
         />
+      </div>
+
+      {/* FEATURE 10: AI Monthly Financial Story */}
+      <div>
+        <MonthlyFinancialStory />
       </div>
 
       {/* 30-Day Cash Forecast Section */}

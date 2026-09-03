@@ -3,11 +3,13 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { SettingsModal } from './SettingsModal';
-import { ShieldCheck, HeartHandshake } from 'lucide-react';
+import { BachatMitra } from '../copilot/BachatMitra';
+import { useCustomer } from '../../context/CustomerContext';
 
 export const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { accessibility } = useCustomer();
 
   const getPageMeta = (pathname: string) => {
     switch (pathname) {
@@ -15,6 +17,46 @@ export const Layout: React.FC = () => {
         return {
           title: 'Resilience Dashboard',
           subtitle: 'Proactive early-warning surveillance & liquidity horizon',
+        };
+      case '/timeline':
+        return {
+          title: 'Financial Journey Timeline',
+          subtitle: 'Longitudinal health trends & milestone evolution across months',
+        };
+      case '/heatmap':
+        return {
+          title: 'Financial Stress Heatmap',
+          subtitle: 'Holistic pressure attribution across 8 financial life pillars',
+        };
+      case '/alert-center':
+        return {
+          title: 'Financial Early Warning Center',
+          subtitle: 'Prioritized diagnostic alerts with non-judgmental guidance',
+        };
+      case '/recovery-plan':
+        return {
+          title: 'Personalized Recovery Plan',
+          subtitle: '4-week structured milestones to rebuild buffer runway',
+        };
+      case '/goals':
+        return {
+          title: 'Financial Goals & Buffer Safeguards',
+          subtitle: 'Track goals with automatic excessive financial pressure checks',
+        };
+      case '/subscriptions':
+        return {
+          title: 'Smart Subscription Manager',
+          subtitle: 'Audit recurring spend, detect unused memberships & compare costs',
+        };
+      case '/bank-support':
+        return {
+          title: 'Financial Support Dashboard',
+          subtitle: 'Responsible banking advisor view for non-punitive early assistance',
+        };
+      case '/transparency':
+        return {
+          title: 'Your Data & AI Transparency',
+          subtitle: 'Full model explainability, privacy controls & data export',
         };
       case '/financial-health':
         return {
@@ -44,15 +86,26 @@ export const Layout: React.FC = () => {
       default:
         return {
           title: 'CashTwin',
-          subtitle: 'Proactive Financial Intelligence',
+          subtitle: 'Proactive Financial Distress Prevention Platform',
         };
     }
   };
 
   const meta = getPageMeta(location.pathname);
 
+  // Dynamic accessibility styles
+  const accessibilityClasses = [
+    accessibility.largerText ? 'text-base font-medium' : 'text-sm',
+    accessibility.highContrast ? 'contrast-125 saturate-150' : '',
+    accessibility.reducedComplexity ? 'motion-reduce' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+    <div
+      className={`min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900 selection:bg-indigo-100 selection:text-indigo-900 ${accessibilityClasses}`}
+    >
       {/* Sidebar for Desktop & Mobile */}
       <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
@@ -88,6 +141,9 @@ export const Layout: React.FC = () => {
           </div>
         </footer>
       </div>
+
+      {/* Bachat Mitra AI Financial Co-Pilot (Docked across all pages) */}
+      <BachatMitra />
 
       {/* Settings / Demo Persona Modal */}
       <SettingsModal />
